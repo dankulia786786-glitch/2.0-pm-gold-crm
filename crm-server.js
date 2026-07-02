@@ -1,10 +1,27 @@
 const express = require('express');
 const path = require('path');
+const { spawn } = require('child_process');
 require('dotenv').config();
 
 const app = express();
 app.use(express.json());
 app.use(express.static('public'));
+
+// Start Telegram Bot as child process
+console.log('🤖 Starting Telegram Bot...');
+const botProcess = spawn('node', ['telegram-bot.js']);
+
+botProcess.stdout.on('data', (data) => {
+  console.log(`BOT: ${data}`);
+});
+
+botProcess.stderr.on('data', (data) => {
+  console.error(`BOT ERROR: ${data}`);
+});
+
+botProcess.on('close', (code) => {
+  console.log(`Bot process exited with code ${code}`);
+});
 
 // Sample leads data
 const leads = [
@@ -389,4 +406,4 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log('🚀 CRM running on port ' + PORT));
+app.listen(PORT, () => console.log('🚀 CRM Dashboard running on port ' + PORT));
