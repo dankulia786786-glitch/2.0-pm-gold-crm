@@ -2,25 +2,21 @@ const TelegramBot = require('node-telegram-bot-api');
 require('dotenv').config();
 
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
-
-// Admin ID - where notifications go
 const ADMIN_ID = process.env.ADMIN_ID;
 
-// Store user data (in memory)
 const userData = {};
 
 console.log('🤖 Telegram Bot Starting...');
 console.log('Bot Token:', process.env.BOT_TOKEN ? '✅ Loaded' : '❌ Missing');
 console.log('Admin ID:', ADMIN_ID ? '✅ Loaded' : '❌ Missing');
 
-// ===== HANDLE /start COMMAND =====
+// /start command
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
   const firstName = msg.from.first_name;
   const username = msg.from.username || 'No username';
 
-  // Store user data
   userData[userId] = {
     chatId,
     firstName,
@@ -28,14 +24,14 @@ bot.onText(/\/start/, (msg) => {
     currentStep: 'welcome'
   };
 
-  // Send welcome message
+  // Welcome message
   const welcomeMsg = `🎉 Welcome, ${firstName}! 🎉
 
 🏆 GOLD SIGNALS
 
 Get FREE access to:
 ✅ VIP Gold Signals — FREE
-✅ $200 Deposit Bonus for Life — FREE & Uncapped
+✅ 50% Lifetime Deposit Bonus
 ✅ Free Vantage Trading Course
 
 ⏱️ Takes less than 2 minutes to complete.
@@ -50,7 +46,7 @@ Get FREE access to:
     }
   });
 
-  // Notify admin
+  // Admin notification
   bot.sendMessage(ADMIN_ID, `
 🆕 NEW LEAD STARTED!
 
@@ -69,8 +65,8 @@ Get FREE access to:
   });
 });
 
-// ===== HANDLE BUTTON CLICKS =====
-bot.on('callback_query', async (query) => {
+// Button clicks
+bot.on('callback_query', (query) => {
   const chatId = query.message.chat.id;
   const userId = query.from.id;
   const data = query.data;
@@ -82,7 +78,7 @@ bot.on('callback_query', async (query) => {
 
   const user = userData[userId];
 
-  // START SETUP
+  // START SETUP - Ask for broker
   if (data === 'start_setup') {
     user.currentStep = 'broker_choice';
     
@@ -101,25 +97,30 @@ bot.on('callback_query', async (query) => {
     );
   }
 
-  // CHOOSE VANTAGE
+  // VANTAGE CHOSEN
   if (data === 'choose_vantage') {
     user.broker = 'vantage';
     user.currentStep = 'vantage_steps';
 
-    const stepsMsg = `🔵 VANTAGE Setup Steps:
+    // Send image (you can add your image URL here)
+    const stepsMsg = `🚀 Complete the steps below to activate your FREE Premium Group access. (Takes 10s)
 
-1️⃣ Log-in to your Vantage client portal
-https://secure.vantagemarkcts.com/logout?lang=en_US
+1️⃣ Log-in to your Vantage client portal:
+👇 https://secure.vantagemarkets.com/logout?lang=en_US
 
 2️⃣ Fill the Form 📋
-https://secure.vantagemarkcts.com/profile/transfer-ib-affiliate
+👇 https://secure.vantagemarkets.com/profile/transfer-ib-affiliate
 
-3️⃣ Enter the following details exactly:
+3️⃣ Enter the following details exactly as shown:
 ✅ Partnership Type: IB
 ✅ IB Code: 58576
 ✅ Reason: PM
 
-⏱️ Takes about 2 minutes!`;
+🚨 IMPORTANT
+🚫 Please close all open positions before initiating the transfer.
+🚫 Wait for the confirmation email before placing any new trades.
+
+👇 Once completed, click the button below.`;
 
     bot.editMessageText(stepsMsg, {
       chat_id: chatId,
@@ -140,25 +141,29 @@ https://secure.vantagemarkcts.com/profile/transfer-ib-affiliate
     `);
   }
 
-  // CHOOSE PU PRIME
+  // PU PRIME CHOSEN
   if (data === 'choose_puprime') {
     user.broker = 'puprime';
     user.currentStep = 'puprime_steps';
 
-    const stepsMsg = `🔴 PU PRIME Setup Steps:
+    const stepsMsg = `🚀 Complete the steps below to activate your FREE Premium Group access. (Takes 10s)
 
 1️⃣ Log-in to your PU Prime Client Portal
-https://myaccount.puprime.com/home
+👇 https://myaccount.puprime.com/home
 
 2️⃣ Open the IB Transfer Form
-https://myaccount.puprime.com/profile/transfer-ib-affiliate
+👇 https://myaccount.puprime.com/profile/transfer-ib-affiliate
 
-3️⃣ Enter the following details exactly:
+3️⃣ Enter the following details exactly as shown:
 ✅ Partnership Type: IB
 ✅ IB Code: 50151
 ✅ Reason: PM
 
-⏱️ Takes about 2 minutes!`;
+🚨 IMPORTANT
+🚫 Please close all open positions before initiating the transfer.
+🚫 Wait for the confirmation email before placing any new trades.
+
+👇 Once completed, click the button below.`;
 
     bot.editMessageText(stepsMsg, {
       chat_id: chatId,
@@ -221,7 +226,7 @@ Please enter your PU Prime email or MT4/MT5 number below:`;
     `);
   }
 
-  // MARK COMPLETE (from admin)
+  // MARK COMPLETE
   if (data.startsWith('complete_')) {
     const targetUserId = parseInt(data.split('_')[1]);
     if (userData[targetUserId]) {
@@ -233,28 +238,25 @@ Please enter your PU Prime email or MT4/MT5 number below:`;
   bot.answerCallbackQuery(query.id);
 });
 
-// ===== HANDLE TEXT INPUT (Email/MT Number) =====
+// Text input (email/MT number)
 bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
   const text = msg.text;
 
-  // Skip if it's a command
   if (text.startsWith('/')) return;
 
   if (!userData[userId]) return;
 
   const user = userData[userId];
 
-  // If waiting for email/MT number
   if (user.currentStep === 'email_input') {
-    // Check if it looks like email or MT number
     if (text.includes('@') || /^\d+$/.test(text)) {
       user.email = text.includes('@') ? text : '';
       user.mtNumber = /^\d+$/.test(text) ? text : '';
       user.currentStep = 'completed';
 
-      // Send confirmation
+      // Final confirmation
       bot.sendMessage(chatId, `
 ✅ Thank you!
 
@@ -265,7 +267,7 @@ Your information has been received.
 Welcome to GOLD SIGNALS! 🚀
       `);
 
-      // Notify admin of completion
+      // Admin notification
       bot.sendMessage(ADMIN_ID, `
 ✅ LEAD COMPLETED ONBOARDING!
 
