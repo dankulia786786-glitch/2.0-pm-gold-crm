@@ -2,6 +2,8 @@ import os
 import json
 import logging
 import requests
+import threading
+import time
 from flask import Flask, request, jsonify
 
 logging.basicConfig(level=logging.INFO)
@@ -11,7 +13,6 @@ app = Flask(__name__)
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 ADMIN_ID = os.environ.get("ADMIN_ID")
-WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")
 
 TELEGRAM_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
@@ -44,44 +45,64 @@ def send_message(chat_id, text, keyboard=None):
     data = {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
     if keyboard:
         data["reply_markup"] = json.dumps(keyboard)
-    requests.post(f"{TELEGRAM_URL}/sendMessage", data=data)
+    try:
+        requests.post(f"{TELEGRAM_URL}/sendMessage", data=data, timeout=10)
+    except:
+        pass
 
 def edit_message(chat_id, message_id, text, keyboard=None):
     data = {"chat_id": chat_id, "message_id": message_id, "text": text, "parse_mode": "HTML"}
     if keyboard:
         data["reply_markup"] = json.dumps(keyboard)
-    requests.post(f"{TELEGRAM_URL}/editMessageText", data=data)
-
-# ─── WEBHOOK ─────────────────────────────────────────────────────────────
-@app.route("/webhook", methods=["POST"])
-def webhook():
     try:
-        update = request.get_json()
-        
-        # /start command
-        if "message" in update and update["message"].get("text") == "/start":
-            msg = update["message"]
-            chat_id = msg["chat"]["id"]
-            user_id = msg["from"]["id"]
-            first_name = msg["from"].get("first_name", "User")
-            username = msg["from"].get("username", "no_username")
+        requests.post(f"{TELEGRAM_URL}/editMessageText", data=data, timeout=10)
+    except:
+        pass
+
+# ─── TELEGRAM BOT (POLLING) ───────────────────────────────────────────────
+def poll_updates():
+    """Poll Telegram for updates"""
+    offset = 0
+    while True:
+        try:
+            url = f"{TELEGRAM_URL}/getUpdates"
+            params = {"offset": offset, "timeout": 30}
+            response = requests.get(url, params=params, timeout=35)
+            data = response.json()
             
-            user_key = str(user_id)
-            if user_key not in users_db:
-                users_db[user_key] = {
-                    "userId": user_id,
-                    "firstName": first_name,
-                    "username": username,
-                    "chatId": chat_id,
-                    "broker": "",
-                    "email": "",
-                    "mtNumber": "",
-                    "status": "pending",
-                    "currentStep": "welcome"
-                }
-                save_users(users_db)
+            if not data.get("ok"):
+                time.sleep(1)
+                continue
             
-            welcome_text = f"""🎉 Welcome, {first_name}! 🎉
+            updates = data.get("result", [])
+            
+            for update in updates:
+                offset = update.get("update_id", 0) + 1
+                
+                # /start command
+                if "message" in update and update["message"].get("text") == "/start":
+                    msg = update["message"]
+                    chat_id = msg["chat"]["id"]
+                    user_id = msg["from"]["id"]
+                    first_name = msg["from"].get("first_name", "User")
+                    username = msg["from"].get("username", "no_username")
+                    
+                    user_key = str(user_id)
+                    if user_key not in users_db:
+                        users_db[user_key] = {
+                            "userId": user_id,
+                            "firstName": first_name,
+                            "username": username,
+                            "chatId": chat_id,
+                            "broker": "",
+                            "email": "",
+                            "mtNumber": "",
+                            "status": "pending",
+                            "currentStep": "welcome"
+                        }
+                        save_users(users_db)
+                    
+                    welcome_text = f"""🎉 Welcome, {first_name}! 🎉
 
 🏆 GOLD SIGNALS
 
@@ -93,54 +114,54 @@ Get FREE access to:
 ⏱️ Takes less than 2 minutes to complete.
 
 👇 Tap below to get started."""
-            
-            keyboard = {
-                "inline_keyboard": [
-                    [{"text": "🚀 Let's get you set up.", "callback_data": "start_setup"}]
-                ]
-            }
-            
-            send_message(chat_id, welcome_text, keyboard)
-            
-            admin_msg = f"""🆕 NEW LEAD STARTED!
+                    
+                    keyboard = {
+                        "inline_keyboard": [
+                            [{"text": "🚀 Let's get you set up.", "callback_data": "start_setup"}]
+                        ]
+                    }
+                    
+                    send_message(chat_id, welcome_text, keyboard)
+                    
+                    admin_msg = f"""🆕 NEW LEAD STARTED!
 
 👤 Name: {first_name}
 🔗 Username: @{username}
 🆔 User ID: {user_id}
 
 Status: Just started"""
-            send_message(ADMIN_ID, admin_msg)
-        
-        # Callback query (button clicks)
-        if "callback_query" in update:
-            query = update["callback_query"]
-            chat_id = query["message"]["chat"]["id"]
-            message_id = query["message"]["message_id"]
-            user_id = query["from"]["id"]
-            data = query["data"]
-            
-            user_key = str(user_id)
-            if user_key not in users_db:
-                return jsonify({"ok": True})
-            
-            user = users_db[user_key]
-            
-            if data == "start_setup":
-                user["currentStep"] = "broker_choice"
-                broker_text = "🏦 Please select the broker you're currently using:"
-                keyboard = {
-                    "inline_keyboard": [
-                        [{"text": "🔵 Vantage", "callback_data": "choose_vantage"}],
-                        [{"text": "🔴 PU Prime", "callback_data": "choose_puprime"}]
-                    ]
-                }
-                edit_message(chat_id, message_id, broker_text, keyboard)
-            
-            elif data == "choose_vantage":
-                user["broker"] = "Vantage"
-                user["currentStep"] = "vantage_steps"
+                    send_message(ADMIN_ID, admin_msg)
                 
-                vantage_text = """🚀 Complete the steps below to activate your FREE Premium Group access. (Takes 10s)
+                # Callback query (button clicks)
+                if "callback_query" in update:
+                    query = update["callback_query"]
+                    chat_id = query["message"]["chat"]["id"]
+                    message_id = query["message"]["message_id"]
+                    user_id = query["from"]["id"]
+                    data = query["data"]
+                    
+                    user_key = str(user_id)
+                    if user_key not in users_db:
+                        continue
+                    
+                    user = users_db[user_key]
+                    
+                    if data == "start_setup":
+                        user["currentStep"] = "broker_choice"
+                        broker_text = "🏦 Please select the broker you're currently using:"
+                        keyboard = {
+                            "inline_keyboard": [
+                                [{"text": "🔵 Vantage", "callback_data": "choose_vantage"}],
+                                [{"text": "🔴 PU Prime", "callback_data": "choose_puprime"}]
+                            ]
+                        }
+                        edit_message(chat_id, message_id, broker_text, keyboard)
+                    
+                    elif data == "choose_vantage":
+                        user["broker"] = "Vantage"
+                        user["currentStep"] = "vantage_steps"
+                        
+                        vantage_text = """🚀 Complete the steps below to activate your FREE Premium Group access. (Takes 10s)
 
 1️⃣ Log-in to your Vantage client portal:
 👇 https://secure.vantagemarkets.com/logout?lang=en_US
@@ -158,17 +179,17 @@ Status: Just started"""
 🚫 Wait for the confirmation email before placing any new trades.
 
 👇 Once completed, click the button below."""
-                
-                keyboard = {"inline_keyboard": [[{"text": "✅ DONE", "callback_data": "vantage_done"}]]}
-                edit_message(chat_id, message_id, vantage_text, keyboard)
-                
-                send_message(ADMIN_ID, f"📌 Lead chose VANTAGE\n👤 {user['firstName']}\n🏢 Vantage")
-            
-            elif data == "choose_puprime":
-                user["broker"] = "PU Prime"
-                user["currentStep"] = "puprime_steps"
-                
-                puprime_text = """🚀 Complete the steps below to activate your FREE Premium Group access. (Takes 10s)
+                        
+                        keyboard = {"inline_keyboard": [[{"text": "✅ DONE", "callback_data": "vantage_done"}]]}
+                        edit_message(chat_id, message_id, vantage_text, keyboard)
+                        
+                        send_message(ADMIN_ID, f"📌 Lead chose VANTAGE\n👤 {user['firstName']}\n🏢 Vantage")
+                    
+                    elif data == "choose_puprime":
+                        user["broker"] = "PU Prime"
+                        user["currentStep"] = "puprime_steps"
+                        
+                        puprime_text = """🚀 Complete the steps below to activate your FREE Premium Group access. (Takes 10s)
 
 1️⃣ Log-in to your PU Prime Client Portal
 👇 https://myaccount.puprime.com/home
@@ -186,71 +207,75 @@ Status: Just started"""
 🚫 Wait for the confirmation email before placing any new trades.
 
 👇 Once completed, click the button below."""
-                
-                keyboard = {"inline_keyboard": [[{"text": "✅ DONE", "callback_data": "puprime_done"}]]}
-                edit_message(chat_id, message_id, puprime_text, keyboard)
-                
-                send_message(ADMIN_ID, f"📌 Lead chose PU PRIME\n👤 {user['firstName']}\n🏢 PU Prime")
-            
-            elif data == "vantage_done":
-                user["currentStep"] = "email_input"
-                email_text = "🎉 Almost there!\n\nPlease enter your Vantage email or MT4/MT5 number below:"
-                edit_message(chat_id, message_id, email_text)
-                send_message(ADMIN_ID, f"📧 Vantage lead waiting\n👤 {user['firstName']}")
-            
-            elif data == "puprime_done":
-                user["currentStep"] = "email_input"
-                email_text = "🎉 Almost there!\n\nPlease enter your PU Prime email or MT4/MT5 number below:"
-                edit_message(chat_id, message_id, email_text)
-                send_message(ADMIN_ID, f"📧 PU Prime lead waiting\n👤 {user['firstName']}")
-            
-            save_users(users_db)
-        
-        # Text input (email/MT)
-        if "message" in update and "text" in update["message"]:
-            msg = update["message"]
-            if not msg["text"].startswith("/"):
-                chat_id = msg["chat"]["id"]
-                user_id = msg["from"]["id"]
-                text = msg["text"]
-                
-                user_key = str(user_id)
-                if user_key in users_db:
-                    user = users_db[user_key]
+                        
+                        keyboard = {"inline_keyboard": [[{"text": "✅ DONE", "callback_data": "puprime_done"}]]}
+                        edit_message(chat_id, message_id, puprime_text, keyboard)
+                        
+                        send_message(ADMIN_ID, f"📌 Lead chose PU PRIME\n👤 {user['firstName']}\n🏢 PU Prime")
                     
-                    if user["currentStep"] == "email_input":
-                        if "@" in text or text.isdigit():
-                            user["email"] = text if "@" in text else ""
-                            user["mtNumber"] = text if text.isdigit() else ""
-                            user["status"] = "completed"
-                            user["currentStep"] = "completed"
+                    elif data == "vantage_done":
+                        user["currentStep"] = "email_input"
+                        email_text = "🎉 Almost there!\n\nPlease enter your Vantage email or MT4/MT5 number below:"
+                        edit_message(chat_id, message_id, email_text)
+                        send_message(ADMIN_ID, f"📧 Vantage lead waiting\n👤 {user['firstName']}")
+                    
+                    elif data == "puprime_done":
+                        user["currentStep"] = "email_input"
+                        email_text = "🎉 Almost there!\n\nPlease enter your PU Prime email or MT4/MT5 number below:"
+                        edit_message(chat_id, message_id, email_text)
+                        send_message(ADMIN_ID, f"📧 PU Prime lead waiting\n👤 {user['firstName']}")
+                    
+                    save_users(users_db)
+                
+                # Text input (email/MT)
+                if "message" in update and "text" in update["message"]:
+                    msg = update["message"]
+                    if not msg["text"].startswith("/"):
+                        chat_id = msg["chat"]["id"]
+                        user_id = msg["from"]["id"]
+                        text = msg["text"]
+                        
+                        user_key = str(user_id)
+                        if user_key in users_db:
+                            user = users_db[user_key]
                             
-                            confirm_text = """✅ Thank you!
+                            if user["currentStep"] == "email_input":
+                                if "@" in text or text.isdigit():
+                                    user["email"] = text if "@" in text else ""
+                                    user["mtNumber"] = text if text.isdigit() else ""
+                                    user["status"] = "completed"
+                                    user["currentStep"] = "completed"
+                                    
+                                    confirm_text = """✅ Thank you!
 
 Your information has been received.
 
 🎁 You now have FREE access to our Premium Group!
 
 Welcome to GOLD SIGNALS! 🚀"""
-                            send_message(chat_id, confirm_text)
-                            
-                            admin_msg = f"""✅ LEAD COMPLETED!
+                                    send_message(chat_id, confirm_text)
+                                    
+                                    admin_msg = f"""✅ LEAD COMPLETED!
 
 👤 {user['firstName']}
 🏢 Broker: {user['broker']}
 📧 Email/MT: {user['email'] or user['mtNumber']}"""
-                            send_message(ADMIN_ID, admin_msg)
-                            
-                            save_users(users_db)
-                        else:
-                            send_message(chat_id, "❌ Please enter a valid email or MT4/MT5 number.")
-    
-    except Exception as e:
-        logger.error(f"Error: {e}")
-    
-    return jsonify({"ok": True})
+                                    send_message(ADMIN_ID, admin_msg)
+                                    
+                                    save_users(users_db)
+                                else:
+                                    send_message(chat_id, "❌ Please enter a valid email or MT4/MT5 number.")
+        
+        except Exception as e:
+            logger.error(f"Poll error: {e}")
+            time.sleep(1)
 
-# ─── DASHBOARD ───────────────────────────────────────────────────────────
+# Start polling in background thread
+polling_thread = threading.Thread(target=poll_updates, daemon=True)
+polling_thread.start()
+logger.info("🤖 Bot polling started")
+
+# ─── DASHBOARD APIS ───────────────────────────────────────────────────────
 @app.route("/api/stats", methods=["GET"])
 def api_stats():
     total = len(users_db)
@@ -292,83 +317,11 @@ def api_broadcast():
 def dashboard():
     return """<!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>👑 Kevin VIP CRM</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a1a2e; color: #e0e0e0; padding: 20px; }
-    .container { max-width: 1600px; margin: 0 auto; }
-    .header { margin-bottom: 25px; border-bottom: 2px solid #ffc700; padding-bottom: 15px; }
-    .header h1 { color: #ffc700; font-size: 28px; }
-    .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 25px; }
-    .stat { background: #0f3460; border: 1px solid #16213e; border-radius: 8px; padding: 15px; text-align: center; }
-    .stat-num { font-size: 32px; font-weight: bold; }
-    .stat-label { font-size: 11px; color: #999; margin-top: 3px; }
-    .broadcast { background: #0f3460; border: 1px solid #16213e; border-radius: 8px; padding: 15px; margin-bottom: 25px; }
-    textarea { width: 100%; padding: 10px; background: #1a2a4a; border: 1px solid #16213e; border-radius: 6px; color: #e0e0e0; margin-bottom: 10px; min-height: 80px; }
-    .btn { padding: 10px 20px; background: #ffc700; color: #000; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
-    .table-container { background: #0f3460; border: 1px solid #16213e; border-radius: 8px; overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    thead { background: #16213e; border-bottom: 2px solid #ffc700; }
-    th { padding: 10px; text-align: left; color: #ffc700; font-weight: 600; }
-    td { padding: 8px 10px; border-bottom: 1px solid #1a2a4a; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>👑 Kevin VIP CRM</h1>
-    </div>
-    <div class="stats">
-      <div class="stat"><div class="stat-num" id="total">0</div><div class="stat-label">Total</div></div>
-      <div class="stat"><div class="stat-num" id="done">0</div><div class="stat-label">Done</div></div>
-      <div class="stat"><div class="stat-num" id="pending">0</div><div class="stat-label">Pending</div></div>
-      <div class="stat"><div class="stat-num" id="vantage">0</div><div class="stat-label">Vantage</div></div>
-      <div class="stat"><div class="stat-num" id="puprime">0</div><div class="stat-label">PU Prime</div></div>
-    </div>
-    <div class="broadcast">
-      <h3>📢 Broadcast Message</h3>
-      <textarea id="msg" placeholder="Your message..."></textarea>
-      <button class="btn" onclick="broadcast()">Send Broadcast</button>
-    </div>
-    <div class="table-container">
-      <table>
-        <thead><tr><th>#</th><th>Name</th><th>Username</th><th>Broker</th><th>MT5</th><th>Status</th></tr></thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-  </div>
-  <script>
-    function load() {
-      fetch('/api/stats').then(r => r.json()).then(d => {
-        document.getElementById('total').innerText = d.total;
-        document.getElementById('done').innerText = d.done;
-        document.getElementById('pending').innerText = d.pending;
-        document.getElementById('vantage').innerText = d.vantage;
-        document.getElementById('puprime').innerText = d.puprime;
-      });
-      fetch('/api/leads').then(r => r.json()).then(leads => {
-        const html = leads.map((l, i) => `<tr><td>${i+1}</td><td>${l.name}</td><td>${l.username || '-'}</td><td>${l.broker || '-'}</td><td>${l.mt5 || '-'}</td><td>${l.status}</td></tr>`).join('');
-        document.getElementById('tbody').innerHTML = html;
-      });
-    }
-    function broadcast() {
-      const msg = document.getElementById('msg').value;
-      if (!msg) { alert('Enter message'); return; }
-      fetch('/api/broadcast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: msg }) }).then(() => {
-        alert('✅ Sent!');
-        document.getElementById('msg').value = '';
-        load();
-      });
-    }
-    load();
-    setInterval(load, 30000);
-  </script>
-</body>
+<head><meta charset="UTF-8"><title>👑 Kevin VIP CRM</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1a1a2e;color:#e0e0e0;padding:20px}.container{max-width:1600px;margin:0 auto}.header{margin-bottom:25px;border-bottom:2px solid #ffc700;padding-bottom:15px}.header h1{color:#ffc700;font-size:28px}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:25px}.stat{background:#0f3460;border:1px solid #16213e;border-radius:8px;padding:15px;text-align:center}.stat-num{font-size:32px;font-weight:bold}.stat-label{font-size:11px;color:#999;margin-top:3px}.broadcast{background:#0f3460;border:1px solid #16213e;border-radius:8px;padding:15px;margin-bottom:25px}textarea{width:100%;padding:10px;background:#1a2a4a;border:1px solid #16213e;border-radius:6px;color:#e0e0e0;margin-bottom:10px;min-height:80px}.btn{padding:10px 20px;background:#ffc700;color:#000;border:none;border-radius:6px;cursor:pointer;font-weight:bold;width:100%}.table-container{background:#0f3460;border:1px solid #16213e;border-radius:8px;overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:12px}thead{background:#16213e;border-bottom:2px solid #ffc700}th{padding:10px;text-align:left;color:#ffc700;font-weight:600}td{padding:8px 10px;border-bottom:1px solid #1a2a4a}</style></head>
+<body><div class="container"><div class="header"><h1>👑 Kevin VIP CRM</h1></div><div class="stats"><div class="stat"><div class="stat-num" id="total">0</div><div class="stat-label">Total</div></div><div class="stat"><div class="stat-num" id="done">0</div><div class="stat-label">Done</div></div><div class="stat"><div class="stat-num" id="pending">0</div><div class="stat-label">Pending</div></div><div class="stat"><div class="stat-num" id="vantage">0</div><div class="stat-label">Vantage</div></div><div class="stat"><div class="stat-num" id="puprime">0</div><div class="stat-label">PU Prime</div></div></div><div class="broadcast"><h3>📢 Broadcast Message</h3><textarea id="msg" placeholder="Your message..."></textarea><button class="btn" onclick="broadcast()">Send Broadcast</button></div><div class="table-container"><table><thead><tr><th>#</th><th>Name</th><th>Username</th><th>Broker</th><th>MT5</th><th>Status</th></tr></thead><tbody id="tbody"></tbody></table></div></div><script>function load(){fetch('/api/stats').then(r=>r.json()).then(d=>{document.getElementById('total').innerText=d.total;document.getElementById('done').innerText=d.done;document.getElementById('pending').innerText=d.pending;document.getElementById('vantage').innerText=d.vantage;document.getElementById('puprime').innerText=d.puprime});fetch('/api/leads').then(r=>r.json()).then(leads=>{const html=leads.map((l,i)=>`<tr><td>${i+1}</td><td>${l.name}</td><td>${l.username||'-'}</td><td>${l.broker||'-'}</td><td>${l.mt5||'-'}</td><td>${l.status}</td></tr>`).join('');document.getElementById('tbody').innerHTML=html})}function broadcast(){const msg=document.getElementById('msg').value;if(!msg){alert('Enter message');return}fetch('/api/broadcast',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:msg})}).then(()=>{alert('✅ Sent!');document.getElementById('msg').value='';load()})}load();setInterval(load,30000)</script></body>
 </html>"""
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
-    logger.info(f"Starting on port {port}")
+    logger.info(f"✅ Starting on port {port}")
     app.run(host="0.0.0.0", port=port, debug=False)
