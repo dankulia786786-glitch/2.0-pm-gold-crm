@@ -248,6 +248,9 @@ SPIN_PRIZES = [
 SPIN_COOLDOWN = 86400  # 24 hours
 spin_state = {}        # user_id -> last_spin_timestamp
 
+# Spinning wheel GIF (upload wheel.gif to your GitHub repo)
+WHEEL_GIF = "https://raw.githubusercontent.com/dankulia786786-glitch/2.0-pm-gold-crm/main/wheel.gif"
+
 def _weighted_spin():
     total = sum(w for _, w, _, _ in SPIN_PRIZES)
     r = random.uniform(0, total)
@@ -274,11 +277,11 @@ def handle_spin(user_id, first_name, username):
         )
         return
 
-    # Build-up animation feel (3 quick messages)
-    send_to_user(user_id, "🎡 <b>Spinning the wheel...</b>\n\n⚪⚪⚪⚪⚪")
-    time.sleep(0.7)
-    send_to_user(user_id, "🎡 <b>Round and round it goes...</b>\n\n🔴🟡🟢🔵🟣")
-    time.sleep(0.7)
+    # Play the spinning wheel GIF (falls back to text if GIF unavailable)
+    sent = send_animation_to_user(user_id, WHEEL_GIF, caption="🎡 <b>Spinning the wheel...</b>")
+    if not sent:
+        send_to_user(user_id, "🎡 <b>Spinning the wheel...</b>\n\n🔴🟡🟢🔵🟣")
+    time.sleep(2.5)  # let the wheel "spin" before revealing
 
     label, weight, is_win, claim_line = _weighted_spin()
     spin_state[str(user_id)] = now
@@ -342,6 +345,19 @@ def send_video_to_user(user_id, video_url, caption=None):
         requests.post(f"{TELEGRAM_URL}/sendVideo", json=payload, timeout=15)
     except Exception as e:
         logger.error(f"Video error: {e}")
+
+def send_animation_to_user(user_id, gif_url, caption=None):
+    """Send an animated GIF (Telegram sendAnimation)."""
+    try:
+        payload = {"chat_id": user_id, "animation": gif_url}
+        if caption:
+            payload["caption"] = caption
+            payload["parse_mode"] = "HTML"
+        r = requests.post(f"{TELEGRAM_URL}/sendAnimation", json=payload, timeout=15)
+        return r.json().get("ok", False)
+    except Exception as e:
+        logger.error(f"Animation error: {e}")
+        return False
 
 def notify_owner(text, keyboard=None):
     payload = {"chat_id": OWNER_ID, "text": text, "parse_mode": "HTML"}
