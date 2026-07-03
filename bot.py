@@ -200,18 +200,26 @@ reply_map        = {}
 
 # ─── DRIP MESSAGES ────────────────────────────────────────────────────────────
 DRIP_MESSAGES = [
-    "⏰ <b>Gold signal expected in the next 10 minutes!</b>\n\nOur PM group gets the entry, the chart, and the TP result the second it happens — completely FREE.\n\nDon't watch from the sidelines.\n\n❓ Need a hand? Message: @Kevsupportteam\n\n👇 JOIN THE PM NOW 👇",
-    "💰 <b>GOLD JUST SMASHED TP — members banked profit FOR FREE!</b>\n\nWhile you were outside the group, our PM members had the entry, the SL, the TP — all sent straight to their phone.\n\nThis happens multiple times a day.\n\n❓ Stuck? Message: @Kevsupportteam\n\n👇 Complete your FREE setup now",
-    "🪙 <b>Bitcoin signal incoming — get it before it moves.</b>\n\nWe trade Gold AND Bitcoin in the same FREE group, including weekend BTC setups when most signal groups go quiet.\n\nYou're one step from being inside.\n\n❓ Questions? @Kevsupportteam\n\n👇 JOIN THE PM NOW",
-    "📊 <b>You started but never finished setting up.</b>\n\nMembers inside the group are getting up to 12+ signals a day across Gold and Bitcoin — all FREE if you've got a Vantage or PU Prime account.\n\nTakes 2 minutes to unlock.\n\n❓ Need help? @Kevsupportteam\n\n👇 Finish your FREE setup",
-    "✅ <b>ALL TARGETS HIT on today's Gold trade!</b>\n\nFull profits secured by everyone already inside the PM group. Every entry, every TP, every chart — sent live, completely FREE.\n\nThis is what waiting is costing you.\n\n❓ Help: @Kevsupportteam\n\n👇 JOIN FREE NOW",
-    "🔥 <b>Live signal dropping shortly on Gold or Bitcoin.</b>\n\nWe're not a once-a-day group — members get multiple high quality setups daily, weekends included.\n\nNo subscription. No catch. Just complete the free setup once.\n\n❓ @Kevsupportteam if you're stuck\n\n👇 Complete setup",
-    "💎 <b>FREE access. Up to 12+ signals a day. Gold + Bitcoin.</b>\n\nWeekend Bitcoin trades when most groups go silent. 50% deposit bonus for life on top.\n\nAll it takes is finishing what you started.\n\n❓ Message: @Kevsupportteam\n\n👇 JOIN THE PM NOW",
-    "🚨 <b>Your spot is still open — but not guaranteed.</b>\n\nYou clicked start but didn't complete the steps. Members already inside are getting Gold and Bitcoin signals around the clock, completely FREE.\n\n❓ Need support? @Kevsupportteam\n\n👇 Finish your FREE setup before it closes",
-    "📈 <b>Bitcoin and Gold both moving today.</b>\n\nOur PM group covers both markets, every day — including weekends when most traders are asleep on opportunities.\n\nFree for anyone with a Vantage or PU Prime account.\n\n❓ @Kevsupportteam\n\n👇 JOIN FREE NOW",
-    "🏆 <b>Another TP smashed — full profits locked in for members.</b>\n\nThe chart, the entry, the result — it's all shared live inside the PM group the second it happens.\n\nYou're missing it right now.\n\n❓ Help: @Kevsupportteam\n\n👇 Complete your FREE setup",
-    "⚡ <b>Setup taking shape on Gold — signal could fire any minute.</b>\n\nGet it the second it's live by finishing your FREE access. Takes under 2 minutes.\n\n❓ Questions? @Kevsupportteam\n\n👇 JOIN THE PM NOW",
-    "🎯 <b>12+ signals a day. Gold, Bitcoin, and weekend BTC trades.</b>\n\nAll 100% FREE with a Vantage or PU Prime account — no subscription required.\n\nYou're so close to being inside.\n\n❓ @Kevsupportteam\n\n👇 Finish your FREE setup now",
+    "⏰ <b>GOLD SIGNAL DROPPING IN 10 MINUTES</b>\n\nOur PM members are about to get the exact entry, SL and TP — sent live, 100% FREE.\n\nYou're not in yet. That's a problem.\n\n⚡ Finish your setup in 20 seconds and you're in for the next one.\n\n👇 JOIN THE PM NOW 👇",
+    "💰 <b>+£312 BANKED ON GOLD TODAY — FOR FREE</b>\n\nMembers inside just closed another winner while you were on the outside.\n\nEvery entry. Every TP. Sent straight to their phone.\n\n⏱ 20 seconds is all that stands between you and the next one.\n\n👇 COMPLETE YOUR FREE SETUP",
+    "🪙 <b>BITCOIN IS ABOUT TO MOVE — ARE YOU IN?</b>\n\nWe trade Gold, Bitcoin AND Forex in the same FREE group — including weekend BTC setups when everyone else goes quiet.\n\nYou're one step away.\n\n👇 JOIN THE PM NOW",
+    "🚨 <b>YOU STARTED… BUT NEVER FINISHED</b>\n\nYour spot is still open — but leads are completing setup every hour and slots fill fast.\n\n12+ signals a day across Gold, BTC & Forex are waiting inside.\n\n⏱ Takes 20 seconds to unlock.\n\n👇 FINISH YOUR FREE SETUP",
+    "✅ <b>ALL 3 TARGETS HIT ON GOLD TODAY</b>\n\nFull profits locked in by everyone already inside the PM.\n\nThis happens multiple times a day — and you're watching from the sidelines.\n\n👇 GET IN FREE NOW",
+    "🔥 <b>LIVE SETUP FORMING RIGHT NOW</b>\n\nGold OR Bitcoin — a signal could fire any minute.\n\nMembers get it the second it's live. You get it too… the moment you finish your free setup.\n\n⏱ 20 seconds. That's it.\n\n👇 COMPLETE SETUP",
+    "💎 <b>12+ FREE SIGNALS A DAY. NO SUBSCRIPTION.</b>\n\nGold. Bitcoin. Forex. Weekend trades. 50% deposit bonus for life on top.\n\nAll free with a Vantage or PU Prime account.\n\nYou already started — just finish it.\n\n👇 JOIN THE PM NOW",
+    "📉 <b>MOST TRADERS LOSE ALONE. OUR MEMBERS DON'T.</b>\n\nReal-time entries, live charts, TP results — shared the second they happen inside the PM.\n\nStop guessing. Start copying winners.\n\n⏱ 20-second setup.\n\n👇 FINISH FREE SETUP",
+    "🌙 <b>WEEKEND BITCOIN TRADE INCOMING</b>\n\nWhile other groups sleep, our PM is live with weekend BTC setups.\n\nYou don't want to miss this one.\n\n👇 JOIN THE PM NOW",
+    "🏆 <b>ANOTHER TP SMASHED — MEMBERS PAID, YOU DIDN'T</b>\n\nThe entry, the chart, the result — all shared live inside the group.\n\nYou're missing every single one right now.\n\n⏱ Fix that in 20 seconds.\n\n👇 COMPLETE YOUR FREE SETUP",
+    "⚡ <b>GOLD BREAKING OUT — SIGNAL LOADING</b>\n\nOur team is lining up the next entry as you read this.\n\nMembers are ready. Are you?\n\n👇 JOIN THE PM NOW",
+    "🎯 <b>YOUR FREE ACCESS IS 20 SECONDS AWAY</b>\n\nGold, Bitcoin & Forex signals. Weekend trades. Live results. 50% lifetime deposit bonus.\n\nEverything's ready — you just haven't finished.\n\n👇 FINISH YOUR FREE SETUP NOW",
+    "📲 <b>MEMBERS ARE GETTING PINGED RIGHT NOW</b>\n\nA fresh Gold setup just hit the PM group.\n\nEvery second you wait is a signal you'll never get back.\n\n⏱ 20 seconds to join.\n\n👇 JOIN THE PM NOW",
+    "🔒 <b>DON'T LET YOUR SPOT EXPIRE</b>\n\nYou clicked start but didn't finish. Incomplete setups get cleared to make room.\n\nLock in your FREE access before it's gone.\n\n👇 COMPLETE SETUP NOW",
+    "💥 <b>BITCOIN SIGNAL JUST HIT TP1</b>\n\nMembers are already in profit. This is what you're missing every single day.\n\nGold, BTC & Forex — all free, all live.\n\n⏱ 20-second setup.\n\n👇 JOIN THE PM NOW",
+    "☕ <b>MORNING GOLD SETUP GOING LIVE</b>\n\nOur PM opens most days with a high-probability Gold entry.\n\nStart your day on the right side of the trade.\n\n👇 FINISH YOUR FREE SETUP",
+    "🚀 <b>THE ONLY THING BETWEEN YOU & FREE SIGNALS: 20 SECONDS</b>\n\nNo fees. No subscription. Just complete the quick setup once and you're in for life.\n\nGold • Bitcoin • Forex • Weekends.\n\n👇 JOIN THE PM NOW",
+    "📈 <b>GOLD + BITCOIN BOTH MOVING TODAY</b>\n\nTwo markets. Multiple setups. One free group.\n\nMembers are catching both. You're catching neither.\n\n⏱ Change that in 20 seconds.\n\n👇 COMPLETE YOUR FREE SETUP",
+    "⏳ <b>LAST NUDGE — YOUR FREE SPOT IS WAITING</b>\n\nYou're SO close. One quick step and you unlock live Gold, BTC & Forex signals, weekend trades, and a 50% lifetime bonus.\n\nDon't leave it unfinished.\n\n👇 JOIN THE PM NOW",
+    "🔔 <b>SIGNAL ALERT: SETUP CONFIRMED</b>\n\nOur team just confirmed the next entry for the PM group.\n\nMembers are getting it. You should be too.\n\n⏱ 20 seconds to complete your setup.\n\n👇 FINISH & JOIN NOW",
 ]
 
 
@@ -500,7 +508,7 @@ def handle_account_number(user_id, first_name, username, account_number, broker)
 
 # ─── DRIP SCHEDULER ───────────────────────────────────────────────────────────
 MAX_DRIP_DAYS = 30
-DRIP_INTERVAL = 25200  # 7 hours (within your 6-8 hour target)
+DRIP_INTERVAL = 21600  # 6 hours
 
 def drip_scheduler():
     logger.info("✅ DRIP SCHEDULER THREAD STARTED")
