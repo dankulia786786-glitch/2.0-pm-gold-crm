@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "8120501279:AAFA5EV0a1dZZumj~7ThoGehz0ow3q1RY54")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "8120501279:AAFA5EVOaidZZUmj-7ThoGehz0ow3q1RY54")
 OWNER_ID  = os.environ.get("OWNER_ID", "52504489")
 
 TELEGRAM_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
