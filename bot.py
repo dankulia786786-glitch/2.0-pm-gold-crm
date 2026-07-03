@@ -225,6 +225,92 @@ DRIP_MESSAGES = [
 
 JOIN_BUTTON = {"inline_keyboard": [[{"text": "👉 JOIN FREE NOW 👈", "callback_data": "restart_onboarding"}]]}
 
+# ─── SPIN THE WHEEL ───────────────────────────────────────────────────────────
+# Each prize: (emoji+label, weight, is_win, claim_line)
+# weight = relative chance. Losers weighted higher so wins feel special.
+SPIN_PRIZES = [
+    ("🥇 FREE GOLD SIGNAL (VIP)", 10, True,
+     "You've won a <b>FREE VIP Gold Signal</b>! 🥇"),
+    ("🪙 FREE BITCOIN SIGNAL (VIP)", 10, True,
+     "You've won a <b>FREE VIP Bitcoin Signal</b>! 🪙"),
+    ("📚 FREE VANTAGE TRADING COURSE", 8, True,
+     "You've unlocked the <b>FREE Vantage Trading Course</b>! 📚"),
+    ("💰 150% DEPOSIT BONUS (New Clients)", 7, True,
+     "You've won a <b>150% Deposit Bonus</b> for new clients! 💰"),
+    ("🔁 50% REDEPOSIT BONUS (Lifetime)", 8, True,
+     "You've won the <b>50% Lifetime Redeposit Bonus</b>! 🔁"),
+    ("🛠 SMART TRADER TOOLS ACCESS", 7, True,
+     "You've unlocked <b>Smart Trader Tools</b> access! 🛠"),
+    ("😬 SO CLOSE — Spin Again Tomorrow", 25, False, ""),
+    ("⏳ NOT THIS TIME — Try Again in 24h", 25, False, ""),
+]
+
+SPIN_COOLDOWN = 86400  # 24 hours
+spin_state = {}        # user_id -> last_spin_timestamp
+
+def _weighted_spin():
+    total = sum(w for _, w, _, _ in SPIN_PRIZES)
+    r = random.uniform(0, total)
+    upto = 0
+    for prize in SPIN_PRIZES:
+        upto += prize[1]
+        if r <= upto:
+            return prize
+    return SPIN_PRIZES[-1]
+
+def handle_spin(user_id, first_name, username):
+    now = time.time()
+    last = spin_state.get(str(user_id), 0)
+    remaining = SPIN_COOLDOWN - (now - last)
+
+    if remaining > 0:
+        hrs = int(remaining // 3600)
+        mins = int((remaining % 3600) // 60)
+        send_to_user(user_id,
+            "🎡 <b>You've already spun today!</b>\n\n"
+            f"⏳ Come back in <b>{hrs}h {mins}m</b> for your next FREE spin.\n\n"
+            "🔥 Tip: complete your setup so you can instantly claim anything you win!",
+            keyboard={"inline_keyboard": [[{"text": "✅ Complete My Setup", "callback_data": "restart_onboarding"}]]}
+        )
+        return
+
+    # Build-up animation feel (3 quick messages)
+    send_to_user(user_id, "🎡 <b>Spinning the wheel...</b>\n\n⚪⚪⚪⚪⚪")
+    time.sleep(0.7)
+    send_to_user(user_id, "🎡 <b>Round and round it goes...</b>\n\n🔴🟡🟢🔵🟣")
+    time.sleep(0.7)
+
+    label, weight, is_win, claim_line = _weighted_spin()
+    spin_state[str(user_id)] = now
+
+    if is_win:
+        send_to_user(user_id,
+            "🎉🎉🎉 <b>WINNER!</b> 🎉🎉🎉\n\n"
+            f"The wheel landed on:\n\n🎁 <b>{label}</b>\n\n"
+            f"{claim_line}\n\n"
+            "⚡ <b>To CLAIM your prize:</b> complete your setup and join the PM — "
+            "our team will activate it for you.\n\n"
+            "⏳ Come back in 24h for another spin!",
+            keyboard={"inline_keyboard": [[{"text": "🏆 CLAIM — Complete Setup", "callback_data": "restart_onboarding"}]]}
+        )
+        # Notify owner of a win
+        notify_owner(
+            f"🎡 <b>SPIN WIN</b>\n\n"
+            f"👤 {first_name} (@{username})\n"
+            f"🆔 <code>{user_id}</code>\n"
+            f"🎁 Won: {label}"
+        )
+    else:
+        send_to_user(user_id,
+            f"🎡 The wheel landed on:\n\n<b>{label}</b>\n\n"
+            "😅 Not a win this time — but every spin gets you closer!\n\n"
+            "💡 Members who complete their setup get signals, bonuses & tools "
+            "<b>every single day</b> — no luck required.\n\n"
+            "⏳ Spin again in 24h!",
+            keyboard={"inline_keyboard": [[{"text": "🔥 Get Daily Rewards — Join Free", "callback_data": "restart_onboarding"}]]}
+        )
+
+
 # ─── CORE SEND FUNCTIONS ──────────────────────────────────────────────────────
 def send_to_user(user_id, text, keyboard=None):
     payload = {"chat_id": user_id, "text": text, "parse_mode": "HTML"}
@@ -496,7 +582,10 @@ def handle_account_number(user_id, first_name, username, account_number, broker)
         "✅ <b>Details received!</b>\n\n"
         "Our team will verify your account and activate your FREE Premium Group access shortly.\n\n"
         "🏆 <b>Welcome to Gold PM Group!</b>\n\n"
-        "Our team will be in touch with you very soon. 🙌"
+        "Our team will be in touch with you very soon. 🙌\n\n"
+        "🎡 <b>BONUS:</b> You've unlocked the <b>Daily Spin</b>! Spin every 24h to win "
+        "free signals, bonuses & tools 👇",
+        keyboard={"inline_keyboard": [[{"text": "🎡 SPIN THE WHEEL", "callback_data": "spin_wheel"}]]}
     )
     mid = notify_owner(
         f"🏆 <b>NEW VIP CLIENT COMPLETE!</b>\n\n"
@@ -705,6 +794,8 @@ def telegram_update():
                 handle_done(user_id, name, username, "puprime")
             elif data == "restart_onboarding":
                 handle_start(user_id, name, username)
+            elif data == "spin_wheel":
+                handle_spin(user_id, name, username)
             return jsonify({"ok": True})
 
         message = update.get("message", {})
@@ -746,6 +837,10 @@ def telegram_update():
 
         if text.strip().startswith("/start"):
             handle_start(user_id, name, username)
+            return jsonify({"ok": True})
+
+        if text.strip().startswith("/spin"):
+            handle_spin(user_id, name, username)
             return jsonify({"ok": True})
 
         state = onboarding_state.get(user_id, {})
