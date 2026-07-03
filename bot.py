@@ -265,7 +265,10 @@ def notify_owner(text, keyboard=None):
         r = requests.post(f"{TELEGRAM_URL}/sendMessage", json=payload, timeout=10)
         data = r.json()
         if data.get("ok"):
+            logger.info(f"✅ Owner notified (chat_id={OWNER_ID})")
             return data["result"]["message_id"]
+        else:
+            logger.error(f"❌ Owner notify FAILED: {data}  (OWNER_ID={OWNER_ID})")
     except Exception as e:
         logger.error(f"Owner notify error: {e}")
     return None
@@ -324,12 +327,14 @@ def handle_start(user_id, first_name, username):
     store_client_message(user_id, "🤖 Bot: Welcome! Please choose your broker — Vantage or PU Prime.", direction="out")
 
     mid = notify_owner(
-        f"🔔 <b>New Lead Started Onboarding!</b>\n\n"
-        f"👤 Name: {first_name}\n"
-        f"📲 Username: @{username}\n"
-        f"🆔 User ID: <code>{user_id}</code>\n\n"
-        f"⏳ Status: Choosing broker...\n\n"
-        f"<i>↩️ Reply to THIS message to send them a message</i>",
+        f"🔔 <b>NEW LEAD STARTED THE BOT!</b>\n\n"
+        f"👤 <b>Name:</b> {first_name}\n"
+        f"📲 <b>Username:</b> @{username}\n"
+        f"🆔 <b>Telegram ID:</b> <code>{user_id}</code>\n"
+        f"📧 <b>Email:</b> —\n"
+        f"📞 <b>Phone:</b> —\n\n"
+        f"⏳ <b>Status:</b> Just started — choosing broker...\n\n"
+        f"💬 <i>Swipe/reply to THIS message to text them directly.</i>",
     )
     if mid:
         reply_map[str(mid)] = str(user_id)
