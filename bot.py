@@ -18,8 +18,8 @@ OWNER_ID  = os.environ.get("OWNER_ID", "52504489")
 
 TELEGRAM_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
-VANTAGE_IMAGE = "https://raw.githubusercontent.com/dankulia786786-glitch/2.0-pm-gold-crm/main/vantage.jpeg"
-PUPRIME_IMAGE = "https://raw.githubusercontent.com/dankulia786786-glitch/2.0-pm-gold-crm/main/puprime.jpeg"
+VANTAGE_IMAGE = "https://raw.githubusercontent.com/dankulia786786-glitch/2.0-pm-gold-crm/main/WhatsApp%20iamge.jpg"
+PUPRIME_IMAGE = "https://raw.githubusercontent.com/dankulia786786-glitch/2.0-pm-gold-crm/main/Pu%20Prime%20WhatsApp.jpg"
 
 # ─── AUTH ─────────────────────────────────────────────────────────────────────
 DASHBOARD_USERS = {
