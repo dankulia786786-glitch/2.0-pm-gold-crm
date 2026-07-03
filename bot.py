@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "8120501279:AAFA5EVOaidZZUmj-7ThoGehz0ow3q1RY54")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "8120501279:AAFA5EVOaidZZUmj-7ThoGehzOow3q1RY54")
 OWNER_ID  = os.environ.get("OWNER_ID", "52504489")
 
 TELEGRAM_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
@@ -297,18 +297,16 @@ def handle_start(user_id, first_name, username):
 
     send_to_user(user_id,
         f"👋 <b>Welcome, {first_name} | GOLD SIGNALS 🔔</b>\n\n"
+        "▓░░░░ <b>20% complete</b>\n\n"
         "Get <b>FREE</b> access to:\n"
         "✅ VIP Gold Signals — <b>FREE</b>\n"
         "✅ 50% Deposit Bonus for Life — <b>FREE & Uncapped</b>\n"
         "✅ Free Vantage Trading Course\n\n"
-        "⏱ Takes less than 2 minutes to complete.\n\n"
-        "👇 Tap below to get started."
-    )
-    send_to_user(user_id,
-        "🚀 Let's get you set up.\n\n"
+        "⏱ Takes less than 20 seconds to complete.\n\n"
+        "🚀 <b>Let's get you set up.</b>\n"
         "Please select the broker you're currently using so we can guide you "
         "through the correct setup process.\n\n"
-        "👇 Choose your broker below:",
+        "👇 <b>Choose your broker below:</b>",
         keyboard={"inline_keyboard": [
             [{"text": "🔵 Vantage", "callback_data": "broker_vantage"}],
             [{"text": "🔴 PU Prime", "callback_data": "broker_puprime"}]
@@ -347,7 +345,11 @@ def handle_vantage(user_id, first_name, username):
             save_users(users_db)
     _add_step(user_id, "Chose Vantage")
 
+    # 1) Image FIRST
+    send_photo_to_user(user_id, VANTAGE_IMAGE)
+    # 2) Steps
     send_to_user(user_id,
+        "▓▓░░░ <b>40% complete</b>\n\n"
         "🚀 <b>Complete the steps below to activate your FREE Premium Group access.</b> (Takes 10s)\n\n"
         "1️⃣ Log-in to your Vantage client portal:\n👇\n"
         "https://secure.vantagemarkets.com/logout?lang=en_US\n\n"
@@ -356,10 +358,9 @@ def handle_vantage(user_id, first_name, username):
         "3️⃣ Enter the following details exactly as shown:\n"
         "✅ Partnership Type: IB\n"
         "✅ IB Code: <b>58576</b>\n"
-        "✅ Reason: PM\n\n"
-        "👇 Step-by-step guide below:"
+        "✅ Reason: PM"
     )
-    send_photo_to_user(user_id, VANTAGE_IMAGE)
+    # 3) Important + DONE button
     send_to_user(user_id,
         "🚨 <b>IMPORTANT</b>\n\n"
         "🚫 Please close all open positions before initiating the transfer.\n"
@@ -391,7 +392,11 @@ def handle_puprime(user_id, first_name, username):
             save_users(users_db)
     _add_step(user_id, "Chose PU Prime")
 
+    # 1) Image FIRST
+    send_photo_to_user(user_id, PUPRIME_IMAGE)
+    # 2) Steps
     send_to_user(user_id,
+        "▓▓░░░ <b>40% complete</b>\n\n"
         "🚀 <b>Complete the steps below to activate your FREE Premium Group access.</b> (Takes 10s)\n\n"
         "1️⃣ Log in to your PU Prime Client Portal\n👇\n"
         "https://myaccount.puprime.com/home\n\n"
@@ -400,10 +405,9 @@ def handle_puprime(user_id, first_name, username):
         "3️⃣ Enter the following details exactly as shown:\n"
         "✅ Partnership Type: IB\n"
         "✅ IB Code: <b>50151</b>\n"
-        "✅ Reason: PM\n\n"
-        "👇 Step-by-step guide below:"
+        "✅ Reason: PM"
     )
-    send_photo_to_user(user_id, PUPRIME_IMAGE)
+    # 3) Important + DONE button
     send_to_user(user_id,
         "🚨 <b>IMPORTANT</b>\n\n"
         "🚫 Please close all open positions before initiating the transfer.\n"
@@ -435,10 +439,15 @@ def handle_done(user_id, first_name, username, broker):
     store_client_message(user_id, "✅ Client tapped: DONE (IB transfer completed)", direction="event")
     store_client_message(user_id, "🤖 Bot: Please enter your MT4/MT5 account number.", direction="out")
 
+    broker_label = "Vantage" if broker == "vantage" else "PU Prime"
     send_to_user(user_id,
+        "▓▓▓▓░ <b>80% complete</b>\n\n"
         "🎉 <b>Almost there — you're getting FREE access!</b>\n\n"
-        "Please enter your MT4/MT5 Account Number below.\n\n"
-        "👇 This will be used to verify your account and activate your FREE Premium Group access."
+        "Please provide <b>ONE</b> of the following to verify your account:\n\n"
+        f"✅ Your <b>{broker_label} MT4/MT5 Account Number</b>\n"
+        "  <i>— or —</i>\n"
+        f"✅ Your <b>{broker_label} account email</b>\n\n"
+        "👇 Just type it below and send."
     )
     onboarding_state[user_id] = {"step": "awaiting_account", "broker": broker, "first_name": first_name, "username": username}
     mid = notify_owner(
@@ -454,11 +463,12 @@ def handle_done(user_id, first_name, username, broker):
 
 def handle_account_number(user_id, first_name, username, account_number, broker):
     broker_name = "Vantage" if broker == "vantage" else "PU Prime"
-    _add_step(user_id, f"Submitted MT5: {account_number}")
+    detail_type = "Email" if "@" in account_number else "MT4/MT5"
+    _add_step(user_id, f"Submitted {detail_type}: {account_number}")
 
     # Log to chat history
-    store_client_message(user_id, f"🔢 Client entered MT5 number: {account_number}", direction="event")
-    store_client_message(user_id, "🤖 Bot: Account received! Team will verify and activate your access shortly. Welcome! 🏆", direction="out")
+    store_client_message(user_id, f"🔢 Client entered {detail_type}: {account_number}", direction="event")
+    store_client_message(user_id, "🤖 Bot: Details received! Team will verify and activate your access shortly. Welcome! 🏆", direction="out")
 
     with users_lock:
         if str(user_id) in users_db:
@@ -467,9 +477,10 @@ def handle_account_number(user_id, first_name, username, account_number, broker)
             save_users(users_db)
 
     send_to_user(user_id,
-        "✅ <b>Account number received!</b>\n\n"
+        "▓▓▓▓▓ <b>100% complete</b> ✅\n\n"
+        "✅ <b>Details received!</b>\n\n"
         "Our team will verify your account and activate your FREE Premium Group access shortly.\n\n"
-        "🏆 Welcome to Kevin's Gold Signals VIP!\n\n"
+        "🏆 <b>Welcome to Gold PM Group!</b>\n\n"
         "Our team will be in touch with you very soon. 🙌"
     )
     mid = notify_owner(
@@ -478,7 +489,7 @@ def handle_account_number(user_id, first_name, username, account_number, broker)
         f"📲 Username: @{username}\n"
         f"🆔 User ID: <code>{user_id}</code>\n"
         f"🏦 Broker: {broker_name}\n"
-        f"📋 MT4/MT5 Account: <b>{account_number}</b>\n\n"
+        f"📋 {detail_type}: <b>{account_number}</b>\n\n"
         f"<i>↩️ Reply to THIS message to send them a message</i>"
     )
     if mid:
@@ -650,10 +661,24 @@ def telegram_update():
                 logger.info(f"🚫 Blocked user tapped button (ignored): @{username}")
                 return jsonify({"ok": True})
 
-            # If user not in DB at all (e.g. after restart), register them first
+            # If user not in DB (e.g. multi-worker / after restart), register
+            # them SILENTLY so their record exists — but do NOT re-send the
+            # welcome message. We still process the button they actually tapped.
             if str(user_id) not in users_db:
-                handle_start(user_id, name, username)
-                return jsonify({"ok": True})
+                with users_lock:
+                    users_db[str(user_id)] = {
+                        "name": name,
+                        "username": username,
+                        "started_at": time.time(),
+                        "completed": False,
+                        "last_drip": time.time(),
+                        "drip_count": 0,
+                        "broker": None,
+                        "mt5_account": None,
+                        "steps": [],
+                        "last_seen": time.time(),
+                    }
+                    save_users(users_db)
 
             if data == "broker_vantage":
                 handle_vantage(user_id, name, username)
@@ -713,15 +738,18 @@ def telegram_update():
             handle_account_number(user_id, name, username, text.strip(), state.get("broker", "unknown"))
             return jsonify({"ok": True})
 
-        # If user is in DB, chose a broker, clicked DONE but state was lost (server restart)
-        # and they type their MT5 number — detect it (pure digits) and handle it
-        if text.strip().isdigit() and len(text.strip()) >= 5:
+        # If user is in DB, chose a broker, clicked DONE but state was lost
+        # (multi-worker / restart) and they type their MT5 number OR email —
+        # detect it and handle it.
+        _txt = text.strip()
+        looks_like_account = (_txt.isdigit() and len(_txt) >= 5) or ("@" in _txt and "." in _txt)
+        if looks_like_account:
             uid_data = users_db.get(str(user_id), {})
-            broker = uid_data.get("broker", "").lower()
+            broker = (uid_data.get("broker") or "").lower()
             if broker and not uid_data.get("completed"):
                 broker_key = "vantage" if broker == "vantage" else "puprime"
-                logger.info(f"Auto-detecting MT5 number from {user_id}: {text.strip()}")
-                handle_account_number(user_id, name, username, text.strip(), broker_key)
+                logger.info(f"Auto-detecting account detail from {user_id}: {_txt}")
+                handle_account_number(user_id, name, username, _txt, broker_key)
                 return jsonify({"ok": True})
 
         forward_to_owner(user_id, name, username, text)
