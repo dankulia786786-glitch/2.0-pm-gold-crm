@@ -298,12 +298,8 @@ def handle_start(user_id, first_name, username):
     send_to_user(user_id,
         f"👋 <b>Welcome, {first_name} | GOLD SIGNALS 🔔</b>\n\n"
         "▓░░░░ <b>20% complete</b>\n\n"
-        "Get <b>FREE</b> access to:\n"
-        "✅ VIP Gold Signals — <b>FREE</b>\n"
-        "✅ 50% Deposit Bonus for Life — <b>FREE & Uncapped</b>\n"
-        "✅ Free Vantage Trading Course\n\n"
-        "⏱ Takes less than 20 seconds to complete.\n\n"
         "🚀 <b>Let's get you set up.</b>\n"
+        "⏱️ Takes less than 20 seconds to complete.\n\n"
         "Please select the broker you're currently using so we can guide you "
         "through the correct setup process.\n\n"
         "👇 <b>Choose your broker below:</b>",
@@ -353,7 +349,7 @@ def handle_vantage(user_id, first_name, username):
         "🚀 <b>Complete the steps below to activate your FREE Premium Group access.</b> (Takes 10s)\n\n"
         "1️⃣ Log-in to your Vantage client portal:\n👇\n"
         "https://secure.vantagemarkets.com/logout?lang=en_US\n\n"
-        "2️⃣ Fill the Form 📋\n👇\n"
+        "2️⃣ After Log-in, Please click link below & Fill the Form 📋\n👇\n"
         "https://secure.vantagemarkets.com/profile/transfer-ib-affiliate\n\n"
         "3️⃣ Enter the following details exactly as shown:\n"
         "✅ Partnership Type: IB\n"
@@ -400,7 +396,7 @@ def handle_puprime(user_id, first_name, username):
         "🚀 <b>Complete the steps below to activate your FREE Premium Group access.</b> (Takes 10s)\n\n"
         "1️⃣ Log in to your PU Prime Client Portal\n👇\n"
         "https://myaccount.puprime.com/home\n\n"
-        "2️⃣ Open the IB Transfer Form\n👇\n"
+        "2️⃣ After Log-in, Please click link below & Open the IB Transfer Form 📋\n👇\n"
         "https://myaccount.puprime.com/profile/transfer-ib-affiliate\n\n"
         "3️⃣ Enter the following details exactly as shown:\n"
         "✅ Partnership Type: IB\n"
@@ -442,11 +438,12 @@ def handle_done(user_id, first_name, username, broker):
     broker_label = "Vantage" if broker == "vantage" else "PU Prime"
     send_to_user(user_id,
         "▓▓▓▓░ <b>80% complete</b>\n\n"
-        "🎉 <b>Almost there — you're getting FREE access!</b>\n\n"
         "Please provide <b>ONE</b> of the following to verify your account:\n\n"
         f"✅ Your <b>{broker_label} MT4/MT5 Account Number</b>\n"
         "  <i>— or —</i>\n"
-        f"✅ Your <b>{broker_label} account email</b>\n\n"
+        f"✅ Your <b>{broker_label} account email</b>\n"
+        "  <i>— or —</i>\n"
+        f"✅ Your <b>{broker_label} UID</b>\n\n"
         "👇 Just type it below and send."
     )
     onboarding_state[user_id] = {"step": "awaiting_account", "broker": broker, "first_name": first_name, "username": username}
@@ -463,7 +460,12 @@ def handle_done(user_id, first_name, username, broker):
 
 def handle_account_number(user_id, first_name, username, account_number, broker):
     broker_name = "Vantage" if broker == "vantage" else "PU Prime"
-    detail_type = "Email" if "@" in account_number else "MT4/MT5"
+    if "@" in account_number:
+        detail_type = "Email"
+    elif account_number.isdigit():
+        detail_type = "MT4/MT5"
+    else:
+        detail_type = "UID"
     _add_step(user_id, f"Submitted {detail_type}: {account_number}")
 
     # Log to chat history
@@ -739,10 +741,13 @@ def telegram_update():
             return jsonify({"ok": True})
 
         # If user is in DB, chose a broker, clicked DONE but state was lost
-        # (multi-worker / restart) and they type their MT5 number OR email —
+        # (multi-worker / restart) and they type their MT5 number, email, or UID —
         # detect it and handle it.
         _txt = text.strip()
-        looks_like_account = (_txt.isdigit() and len(_txt) >= 5) or ("@" in _txt and "." in _txt)
+        is_number = _txt.isdigit() and len(_txt) >= 4
+        is_email = "@" in _txt and "." in _txt
+        is_uid = _txt.isalnum() and 4 <= len(_txt) <= 20
+        looks_like_account = is_number or is_email or is_uid
         if looks_like_account:
             uid_data = users_db.get(str(user_id), {})
             broker = (uid_data.get("broker") or "").lower()
