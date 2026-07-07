@@ -21,6 +21,13 @@ TELEGRAM_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 VANTAGE_IMAGE = "https://raw.githubusercontent.com/dankulia786786-glitch/2.0-pm-gold-crm/main/WhatsApp%20iamge.jpg"
 PUPRIME_IMAGE = "https://raw.githubusercontent.com/dankulia786786-glitch/2.0-pm-gold-crm/main/Pu%20Prime%20WhatsApp.jpg"
 
+# Promo links (set these in Railway Variables, or edit here)
+WHATSAPP_LINK = os.environ.get("WHATSAPP_LINK", "https://chat.whatsapp.com/IkmwitDmS5D3vWo8fN6Mhj")
+PREMIUM_LINK  = os.environ.get("PREMIUM_LINK", "https://buy.stripe.com/7sY14mgvE90VgvteQp18c3c")
+
+# Your signals channel — trades posted here get forwarded to all bot users
+SIGNALS_CHANNEL_ID = os.environ.get("SIGNALS_CHANNEL_ID", "-1004447151625")
+
 # ─── AUTH ─────────────────────────────────────────────────────────────────────
 # Passwords are read from Railway env vars (never hardcoded in the public repo).
 # Set DASH_PASS and DASH_PASS_TEAM in Railway Variables.
@@ -222,10 +229,21 @@ DRIP_MESSAGES = [
     "📈 <b>GOLD + BITCOIN BOTH MOVING TODAY</b>\n\nTwo markets. Multiple setups. One free group.\n\nMembers are catching both. You're catching neither.\n\n⏱ Change that in 20 seconds.\n\n👇 COMPLETE YOUR FREE SETUP",
     "⏳ <b>LAST NUDGE — YOUR FREE SPOT IS WAITING</b>\n\nYou're SO close. One quick step and you unlock live Gold, BTC & Forex signals, weekend trades, and a 50% lifetime bonus.\n\nDon't leave it unfinished.\n\n👇 JOIN THE PM NOW",
     "🔔 <b>SIGNAL ALERT: SETUP CONFIRMED</b>\n\nOur team just confirmed the next entry for the PM group.\n\nMembers are getting it. You should be too.\n\n⏱ 20 seconds to complete your setup.\n\n👇 FINISH & JOIN NOW",
+    "📲 <b>JOIN OUR WHATSAPP COMMUNITY TOO!</b>\n\nFREE Gold &amp; Bitcoin signals delivered straight to WhatsApp 🚀\n\n✅ Live GOLD alerts\n✅ Bitcoin setups\n✅ Daily market updates\n\nDon't miss out — we're growing fast.\n\n👇 Tap below to join the WhatsApp group",
+    "💳 <b>WANT PREMIUM SIGNALS? KEEP YOUR OWN BROKER.</b>\n\nProfessional Gold &amp; Bitcoin signals — works with ANY broker, ANY platform (MT4, MT5, TradingView).\n\n✅ Real-time entries &amp; exits\n✅ You keep 100% of your profits\n✅ No account transfer needed\n\nOr get it all FREE — complete your 20-sec setup.\n\n👇 SEE YOUR OPTIONS",
+    "🎁 <b>50% DEPOSIT BONUS — FOR LIFE</b>\n\nEvery time you deposit on your Vantage or PU Prime account, you get <b>50% extra</b> — forever, uncapped.\n\nThat's free trading capital on every top-up.\n\nComplete your 20-second setup to activate it.\n\n👇 ACTIVATE MY BONUS",
+    "💰 <b>NEW CLIENTS: 150% DEPOSIT BONUS</b>\n\nBrand new to Vantage? You qualify for a massive <b>150% deposit bonus</b> — triple your starting capital.\n\nThis is new-client only. Don't miss it.\n\n⏱ 20-second setup to claim.\n\n👇 CLAIM 150% BONUS",
+    "🚨 <b>GOLD TRIGGER JUST SENT — MEMBERS ARE IN</b>\n\nThe entry fired 2 minutes ago inside the PM.\n\nYou're not getting these yet. That changes the moment you finish your setup.\n\n⏱ 20 seconds.\n\n👇 JOIN THE PM NOW",
+    "📊 <b>KEEP YOUR BROKER. KEEP YOUR PLATFORM. JUST GET THE SIGNALS.</b>\n\nOur Premium signals work anywhere — Vantage, IC Markets, FXCM, any MT4/MT5/TradingView.\n\nOr join the PM FREE. Your choice.\n\n👇 SEE OPTIONS",
+
 ]
 
 
-JOIN_BUTTON = {"inline_keyboard": [[{"text": "👉 JOIN FREE NOW 👈", "callback_data": "restart_onboarding"}]]}
+JOIN_BUTTON = {"inline_keyboard": [
+    [{"text": "✅ COMPLETE SETUP (20 sec)", "callback_data": "restart_onboarding"}],
+    [{"text": "📲 Join WhatsApp", "url": WHATSAPP_LINK},
+     {"text": "💳 Premium Signals", "url": PREMIUM_LINK}],
+]}
 
 # ─── SPIN THE WHEEL ───────────────────────────────────────────────────────────
 # Each prize: (emoji+label, weight, is_win, claim_line)
@@ -618,9 +636,52 @@ def handle_account_number(user_id, first_name, username, account_number, broker)
         reply_map[str(mid)] = str(user_id)
     onboarding_state.pop(user_id, None)
 
+# ─── CHANNEL POST FORWARDING ──────────────────────────────────────────────────
+CHANNEL_HOOKS = [
+    "🔥 <b>THIS JUST DROPPED IN THE PM — YOU MISSED IT!</b>\n\nComplete your 20-second setup to catch the next one 👇",
+    "🚨 <b>LIVE FROM THE PM GROUP — members are already on it!</b>\n\nYou're missing these. Finish your setup in 20 seconds 👇",
+    "💰 <b>ANOTHER ONE JUST WENT OUT TO PM MEMBERS!</b>\n\nThis could've been you. Complete your free setup now 👇",
+    "⚡ <b>PM MEMBERS GOT THIS SECONDS AGO.</b>\n\nStop missing out — 20-second setup and you're in 👇",
+    "📈 <b>JUST POSTED IN THE PM — did you catch it?</b>\n\nGet every signal live. Finish your setup 👇",
+]
+
+def forward_channel_post_to_users(post):
+    """Copy a channel post to every bot user with a FOMO hook + buttons."""
+    from_chat_id = post.get("chat", {}).get("id")
+    message_id   = post.get("message_id")
+    if not from_chat_id or not message_id:
+        return
+
+    hook = random.choice(CHANNEL_HOOKS)
+
+    with users_lock:
+        uids = list(users_db.keys())
+
+    logger.info(f"📢 Forwarding channel post to {len(uids)} users...")
+    sent = 0
+    for uid in uids:
+        # skip blocked users
+        udata = users_db.get(uid, {})
+        if udata.get("blocked"):
+            continue
+        try:
+            # 1) copy the actual trade/screenshot (no "forwarded from" tag)
+            requests.post(f"{TELEGRAM_URL}/copyMessage", json={
+                "chat_id": uid,
+                "from_chat_id": from_chat_id,
+                "message_id": message_id,
+            }, timeout=10)
+            # 2) send the hook + buttons underneath
+            send_to_user(uid, hook, keyboard=JOIN_BUTTON)
+            sent += 1
+            time.sleep(0.05)  # stay under Telegram rate limits (~30/sec)
+        except Exception as e:
+            logger.error(f"Forward to {uid} failed: {e}")
+    logger.info(f"📢 Channel post forwarded to {sent} users.")
+
 # ─── DRIP SCHEDULER ───────────────────────────────────────────────────────────
 MAX_DRIP_DAYS = 30
-DRIP_INTERVAL = 21600  # 6 hours
+DRIP_INTERVAL = 28800  # 8 hours
 
 def drip_scheduler():
     logger.info("✅ DRIP SCHEDULER THREAD STARTED")
@@ -762,6 +823,19 @@ def forward_tp():
 def telegram_update():
     try:
         update = request.get_json(force=True)
+
+        # ── CHANNEL POST FORWARDING ──
+        # When a new post appears in your signals channel, copy it to every
+        # user who started the bot, with a FOMO hook + buttons.
+        if "channel_post" in update:
+            post = update["channel_post"]
+            chat_id = str(post.get("chat", {}).get("id", ""))
+            if chat_id == str(SIGNALS_CHANNEL_ID):
+                threading.Thread(
+                    target=forward_channel_post_to_users,
+                    args=(post,), daemon=True
+                ).start()
+            return jsonify({"ok": True})
 
         if "callback_query" in update:
             cq       = update["callback_query"]
@@ -1960,7 +2034,11 @@ def setup_webhook():
     try:
         r = requests.post(
             f"{TELEGRAM_URL}/setWebhook",
-            json={"url": webhook_url, "drop_pending_updates": True},
+            json={
+                "url": webhook_url,
+                "drop_pending_updates": True,
+                "allowed_updates": ["message", "callback_query", "channel_post"],
+            },
             timeout=10,
         )
         if r.json().get("ok"):
