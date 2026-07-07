@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "8120501279:AAFA5EVOaidZZUmj-7ThoGehzOow3q1RY54")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
 OWNER_ID  = os.environ.get("OWNER_ID", "8957877294")
 
 TELEGRAM_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
@@ -22,9 +22,11 @@ VANTAGE_IMAGE = "https://raw.githubusercontent.com/dankulia786786-glitch/2.0-pm-
 PUPRIME_IMAGE = "https://raw.githubusercontent.com/dankulia786786-glitch/2.0-pm-gold-crm/main/Pu%20Prime%20WhatsApp.jpg"
 
 # ─── AUTH ─────────────────────────────────────────────────────────────────────
+# Passwords are read from Railway env vars (never hardcoded in the public repo).
+# Set DASH_PASS and DASH_PASS_TEAM in Railway Variables.
 DASHBOARD_USERS = {
-    "Mobile0208@": "Kevin",
-    "Admin123":    "Team"
+    os.environ.get("DASH_PASS", "change-me-owner"): "Owner",
+    os.environ.get("DASH_PASS_TEAM", "change-me-team"): "Team",
 }
 
 def check_auth(username, password):
