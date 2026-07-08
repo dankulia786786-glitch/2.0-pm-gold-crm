@@ -209,38 +209,53 @@ reply_map        = {}
 
 # ─── DRIP MESSAGES ────────────────────────────────────────────────────────────
 DRIP_MESSAGES = [
-    "⏰ <b>GOLD SIGNAL DROPPING IN 10 MINUTES</b>\n\nOur PM members are about to get the exact entry, SL and TP — sent live, 100% FREE.\n\nYou're not in yet. That's a problem.\n\n⚡ Finish your setup in 20 seconds and you're in for the next one.\n\n👇 JOIN THE PM NOW 👇",
-    "💰 <b>+£312 BANKED ON GOLD TODAY — FOR FREE</b>\n\nMembers inside just closed another winner while you were on the outside.\n\nEvery entry. Every TP. Sent straight to their phone.\n\n⏱ 20 seconds is all that stands between you and the next one.\n\n👇 COMPLETE YOUR FREE SETUP",
-    "🪙 <b>BITCOIN IS ABOUT TO MOVE — ARE YOU IN?</b>\n\nWe trade Gold, Bitcoin AND Forex in the same FREE group — including weekend BTC setups when everyone else goes quiet.\n\nYou're one step away.\n\n👇 JOIN THE PM NOW",
-    "🚨 <b>YOU STARTED… BUT NEVER FINISHED</b>\n\nYour spot is still open — but leads are completing setup every hour and slots fill fast.\n\n12+ signals a day across Gold, BTC & Forex are waiting inside.\n\n⏱ Takes 20 seconds to unlock.\n\n👇 FINISH YOUR FREE SETUP",
-    "✅ <b>ALL 3 TARGETS HIT ON GOLD TODAY</b>\n\nFull profits locked in by everyone already inside the PM.\n\nThis happens multiple times a day — and you're watching from the sidelines.\n\n👇 GET IN FREE NOW",
-    "🔥 <b>LIVE SETUP FORMING RIGHT NOW</b>\n\nGold OR Bitcoin — a signal could fire any minute.\n\nMembers get it the second it's live. You get it too… the moment you finish your free setup.\n\n⏱ 20 seconds. That's it.\n\n👇 COMPLETE SETUP",
-    "💎 <b>12+ FREE SIGNALS A DAY. NO SUBSCRIPTION.</b>\n\nGold. Bitcoin. Forex. Weekend trades. 50% deposit bonus for life on top.\n\nAll free with a Vantage or PU Prime account.\n\nYou already started — just finish it.\n\n👇 JOIN THE PM NOW",
-    "📉 <b>MOST TRADERS LOSE ALONE. OUR MEMBERS DON'T.</b>\n\nReal-time entries, live charts, TP results — shared the second they happen inside the PM.\n\nStop guessing. Start copying winners.\n\n⏱ 20-second setup.\n\n👇 FINISH FREE SETUP",
-    "🌙 <b>WEEKEND BITCOIN TRADE INCOMING</b>\n\nWhile other groups sleep, our PM is live with weekend BTC setups.\n\nYou don't want to miss this one.\n\n👇 JOIN THE PM NOW",
-    "🏆 <b>ANOTHER TP SMASHED — MEMBERS PAID, YOU DIDN'T</b>\n\nThe entry, the chart, the result — all shared live inside the group.\n\nYou're missing every single one right now.\n\n⏱ Fix that in 20 seconds.\n\n👇 COMPLETE YOUR FREE SETUP",
-    "⚡ <b>GOLD BREAKING OUT — SIGNAL LOADING</b>\n\nOur team is lining up the next entry as you read this.\n\nMembers are ready. Are you?\n\n👇 JOIN THE PM NOW",
-    "🎯 <b>YOUR FREE ACCESS IS 20 SECONDS AWAY</b>\n\nGold, Bitcoin & Forex signals. Weekend trades. Live results. 50% lifetime deposit bonus.\n\nEverything's ready — you just haven't finished.\n\n👇 FINISH YOUR FREE SETUP NOW",
-    "📲 <b>MEMBERS ARE GETTING PINGED RIGHT NOW</b>\n\nA fresh Gold setup just hit the PM group.\n\nEvery second you wait is a signal you'll never get back.\n\n⏱ 20 seconds to join.\n\n👇 JOIN THE PM NOW",
-    "🔒 <b>DON'T LET YOUR SPOT EXPIRE</b>\n\nYou clicked start but didn't finish. Incomplete setups get cleared to make room.\n\nLock in your FREE access before it's gone.\n\n👇 COMPLETE SETUP NOW",
-    "💥 <b>BITCOIN SIGNAL JUST HIT TP1</b>\n\nMembers are already in profit. This is what you're missing every single day.\n\nGold, BTC & Forex — all free, all live.\n\n⏱ 20-second setup.\n\n👇 JOIN THE PM NOW",
-    "☕ <b>MORNING GOLD SETUP GOING LIVE</b>\n\nOur PM opens most days with a high-probability Gold entry.\n\nStart your day on the right side of the trade.\n\n👇 FINISH YOUR FREE SETUP",
-    "🚀 <b>THE ONLY THING BETWEEN YOU & FREE SIGNALS: 20 SECONDS</b>\n\nNo fees. No subscription. Just complete the quick setup once and you're in for life.\n\nGold • Bitcoin • Forex • Weekends.\n\n👇 JOIN THE PM NOW",
-    "📈 <b>GOLD + BITCOIN BOTH MOVING TODAY</b>\n\nTwo markets. Multiple setups. One free group.\n\nMembers are catching both. You're catching neither.\n\n⏱ Change that in 20 seconds.\n\n👇 COMPLETE YOUR FREE SETUP",
-    "⏳ <b>LAST NUDGE — YOUR FREE SPOT IS WAITING</b>\n\nYou're SO close. One quick step and you unlock live Gold, BTC & Forex signals, weekend trades, and a 50% lifetime bonus.\n\nDon't leave it unfinished.\n\n👇 JOIN THE PM NOW",
-    "🔔 <b>SIGNAL ALERT: SETUP CONFIRMED</b>\n\nOur team just confirmed the next entry for the PM group.\n\nMembers are getting it. You should be too.\n\n⏱ 20 seconds to complete your setup.\n\n👇 FINISH & JOIN NOW",
-    "📲 <b>JOIN OUR WHATSAPP COMMUNITY TOO!</b>\n\nFREE Gold &amp; Bitcoin signals delivered straight to WhatsApp 🚀\n\n✅ Live GOLD alerts\n✅ Bitcoin setups\n✅ Daily market updates\n\nDon't miss out — we're growing fast.\n\n👇 Tap below to join the WhatsApp group",
-    "💳 <b>WANT PREMIUM SIGNALS? KEEP YOUR OWN BROKER.</b>\n\nProfessional Gold &amp; Bitcoin signals — works with ANY broker, ANY platform (MT4, MT5, TradingView).\n\n✅ Real-time entries &amp; exits\n✅ You keep 100% of your profits\n✅ No account transfer needed\n\nOr get it all FREE — complete your 20-sec setup.\n\n👇 SEE YOUR OPTIONS",
-    "🎁 <b>50% DEPOSIT BONUS — FOR LIFE</b>\n\nEvery time you deposit on your Vantage or PU Prime account, you get <b>50% extra</b> — forever, uncapped.\n\nThat's free trading capital on every top-up.\n\nComplete your 20-second setup to activate it.\n\n👇 ACTIVATE MY BONUS",
-    "💰 <b>NEW CLIENTS: 150% DEPOSIT BONUS</b>\n\nBrand new to Vantage? You qualify for a massive <b>150% deposit bonus</b> — triple your starting capital.\n\nThis is new-client only. Don't miss it.\n\n⏱ 20-second setup to claim.\n\n👇 CLAIM 150% BONUS",
-    "🚨 <b>GOLD TRIGGER JUST SENT — MEMBERS ARE IN</b>\n\nThe entry fired 2 minutes ago inside the PM.\n\nYou're not getting these yet. That changes the moment you finish your setup.\n\n⏱ 20 seconds.\n\n👇 JOIN THE PM NOW",
-    "📊 <b>KEEP YOUR BROKER. KEEP YOUR PLATFORM. JUST GET THE SIGNALS.</b>\n\nOur Premium signals work anywhere — Vantage, IC Markets, FXCM, any MT4/MT5/TradingView.\n\nOr join the PM FREE. Your choice.\n\n👇 SEE OPTIONS",
+    # ===== PM / PREMIUM GROUP (10) =====
+    "\U0001F6A8 <b>3 GOLD TRADES TODAY \u2014 ALL SMASHED TP</b>\n\n\nThe next ones are going out in the Premium Group only.\n\n\nIt's FREE to join with a Vantage account.\n\n\nDon't miss the next scalp \U0001F447",
 
+    "\U0001F525 <b>A GOLD SIGNAL JUST DROPPED IN THE PREMIUM GROUP</b>\n\n\nYou're not in it yet.\n\n\nFix that in 20 seconds \U0001F447",
+
+    "\U0001F4CA <b>OUR ANALYSIS WAS PERFECT AGAIN TODAY</b>\n\n\nMembers caught every move in the Premium Group.\n\n\nAnd you still haven't joined us.\n\n\nIt's free \u2014 complete your setup \U0001F447",
+
+    "\u23F0 <b>QUICK SCALP GOLD TRADES GO OUT IN PREMIUM ONLY NOW</b>\n\n\nThe group trades are moving fast.\n\n\nGet the entries live, straight to your phone.\n\n\nJoin free in 20 seconds \U0001F447",
+
+    "\U0001F6A8 <b>GOLD SIGNAL COMING IN THE PREMIUM GROUP SOON</b>\n\n\nBe ready.\n\n\nComplete your setup now so you don't miss it \U0001F447",
+
+    "\U0001F525 <b>ANOTHER WEEK, ANOTHER RUN OF WINS</b>\n\n\nOur Premium members are eating good.\n\n\nFree gold signals, live entries, real results.\n\n\nStart in 20 seconds \U0001F447",
+
+    "\U0001F4A1 <b>WHY MISS TRADES WHEN THE PREMIUM GROUP IS FREE?</b>\n\n\nLifetime access with a Vantage account.\n\n\nGold signals, quick scalps, and full support.\n\n\nComplete your setup \U0001F447",
+
+    "\U0001F6A8 <b>THE PM GROUP JUST WENT LIVE WITH A SETUP</b>\n\n\nMembers are already in.\n\n\nYou've got 20 seconds to join them \U0001F447",
+
+    "\U0001F4C8 <b>GOLD IS MOVING \u2014 AND SO IS THE PREMIUM GROUP</b>\n\n\nEvery entry shared live.\n\n\nDon't watch from the outside.\n\n\nJoin free \U0001F447",
+
+    "\U0001F525 <b>YOUR FREE PREMIUM ACCESS IS WAITING</b>\n\n\nGold signals. Quick scalps. Live support.\n\n\nAll free with a Vantage account.\n\n\nFinish your setup in 20 seconds \U0001F447",
+
+    # ===== ACCOUNT MANAGEMENT (10) =====
+    "\U0001F4CA <b>TIRED OF WATCHING SIGNALS AND MISSING ENTRIES?</b>\n\n\nLet us trade it for you.\n\n\n\u2705 Start from \u00A3500 (we recommend \u00A31,000)\n\n\u2705 80% yours : 20% performance fee\n\n\u2705 No upfront fees \u2014 you only pay on profit\n\n\u2705 We target 65%+ monthly on GOLD & BTC\n\n\u2705 Full transparency \u2014 log in and watch every trade live\n\n\nReal clients, real results.\n\n\nComplete your setup to get started \U0001F447",
+
+    "\U0001F4A1 <b>IN 2026, ONE INCOME ISN'T ENOUGH</b>\n\n\nAccount Management is the passive, consistent way to grow.\n\n\nWe trade, you keep 80%.\n\n\n\u2705 From \u00A3500, no upfront fees\n\n\u2705 You keep full control of your funds\n\n\u2705 Live verified results you can check yourself\n\n\nLet your money work while you work \U0001F447",
+
+    "\U0001F4CA <b>REAL RESULTS, NOT SCREENSHOTS</b>\n\n\nOur managed clients are seeing serious growth on GOLD & BTC.\n\n\n\u2705 Start from \u00A3500\n\n\u2705 80:20 split in your favour\n\n\u2705 Only pay on profit\n\n\u2705 Log in and verify every trade yourself\n\n\nFull transparency, always \U0001F447",
+
+    "\U0001F525 <b>LET US TRADE WHILE YOU LIVE YOUR LIFE</b>\n\n\nAccount Management is built for busy people.\n\n\n\u2705 Manual trading only, GOLD & BTC\n\n\u2705 Start \u00A3500 (recommended \u00A31,000)\n\n\u2705 We target 65%+ monthly\n\n\u2705 No upfront fees, only pay on profit\n\n\nComplete your setup to get started \U0001F447",
+
+    "\U0001F4C8 <b>PASSIVE. CONSISTENT. TRANSPARENT.</b>\n\n\nThat's how our Account Management works.\n\n\n\u2705 You keep full control of your funds\n\n\u2705 We only trade \u2014 no access to your deposits or withdrawals\n\n\u2705 Monitor every trade live, anytime\n\n\nStart from \u00A3500 \U0001F447",
+
+    "\U0001F4A1 <b>WHY TRY TO TIME THE MARKET YOURSELF?</b>\n\n\nOur team does it for you, live on your account.\n\n\n\u2705 80% yours : 20% performance fee\n\n\u2705 No upfront fees\n\n\u2705 65%+ monthly target\n\n\nProven results, full transparency \U0001F447",
+
+    "\U0001F4CA <b>SERIOUS ABOUT GROWING YOUR ACCOUNT?</b>\n\n\nAccount Management does the work for you.\n\n\n\u2705 From \u00A3500 to start\n\n\u2705 We trade GOLD & BTC daily\n\n\u2705 London & New York sessions\n\n\u2705 You only pay on profit\n\n\nComplete your setup and let's talk \U0001F447",
+
+    "\U0001F525 <b>YOUR MONEY SHOULD BE WORKING HARDER</b>\n\n\nManaged trading, done for you.\n\n\n\u2705 Start \u00A3500, recommended \u00A31,000\n\n\u2705 80:20 profit split in your favour\n\n\u2705 Live results you can verify\n\n\nUnder-promise, over-deliver \u2014 that's how we do it \U0001F447",
+
+    "\U0001F4C8 <b>WANT CONSISTENT GROWTH WITHOUT THE STRESS?</b>\n\n\nLet our team manage it.\n\n\n\u2705 No upfront fees\n\n\u2705 Full fund control stays with you\n\n\u2705 Target 65%+ monthly on GOLD & BTC\n\n\nComplete your setup to get started \U0001F447",
+
+    "\U0001F4A1 <b>PEOPLE TAKING ACTION ARE THE ONES WINNING IN 2026</b>\n\n\nAccount Management is the passive path.\n\n\n\u2705 From \u00A3500, no upfront fees\n\n\u2705 80% yours\n\n\u2705 Live verified results\n\n\nMake your move \U0001F447",
 ]
 
 
 JOIN_BUTTON = {"inline_keyboard": [
     [{"text": "✅ COMPLETE SETUP (20 sec)", "callback_data": "restart_onboarding"}],
+    [{"text": "❗️ Live Support", "url": "https://t.me/Vantageadmins"}],
     [{"text": "📲 Join WhatsApp", "url": WHATSAPP_LINK},
      {"text": "💳 Premium Signals", "url": PREMIUM_LINK}],
 ]}
@@ -681,10 +696,14 @@ def forward_channel_post_to_users(post):
 
 # ─── DRIP SCHEDULER ───────────────────────────────────────────────────────────
 MAX_DRIP_DAYS = 30
-DRIP_INTERVAL = 28800  # 8 hours
+# Once per day per user, fired at a RANDOM time (not clustered, not fixed).
+# We give each user a random "next drip" time between 20 and 28 hours after
+# their last one, so it lands at different times each day.
+DRIP_MIN_GAP = 20 * 3600  # 20 hours
+DRIP_MAX_GAP = 28 * 3600  # 28 hours
 
 def drip_scheduler():
-    logger.info("✅ DRIP SCHEDULER THREAD STARTED")
+    logger.info("✅ DRIP SCHEDULER THREAD STARTED (once/day, random time)")
     cycle = 0
     while True:
         cycle += 1
@@ -703,22 +722,34 @@ def drip_scheduler():
                 started = data.get("started_at", now)
                 if now - started > MAX_DRIP_DAYS * 86400:
                     continue
-                last_drip = data.get("last_drip", 0)
-                if now - last_drip < DRIP_INTERVAL:
+
+                # each user has their own random next-drip time
+                next_drip = data.get("next_drip")
+                if next_drip is None:
+                    # first-timer: schedule their first drip at a random time today
+                    next_drip = now + random.uniform(DRIP_MIN_GAP, DRIP_MAX_GAP)
+                    with users_lock:
+                        users_db[uid]["next_drip"] = next_drip
+                        save_users(users_db)
+                    continue
+
+                if now < next_drip:
                     continue
 
                 due_count += 1
-                time.sleep(random.uniform(5, 30))
 
                 count = data.get("drip_count", 0)
-                msg   = DRIP_MESSAGES[count % len(DRIP_MESSAGES)]
-                ok    = send_to_user(uid, msg, keyboard=JOIN_BUTTON)
+                # rotate through messages, shuffled so PM/AM mix feels random
+                msg = DRIP_MESSAGES[count % len(DRIP_MESSAGES)]
+                ok  = send_to_user(uid, msg, keyboard=JOIN_BUTTON)
                 if ok:
                     with users_lock:
                         users_db[uid]["last_drip"]  = time.time()
                         users_db[uid]["drip_count"] = count + 1
+                        # schedule the NEXT one at a fresh random time
+                        users_db[uid]["next_drip"]  = time.time() + random.uniform(DRIP_MIN_GAP, DRIP_MAX_GAP)
                         save_users(users_db)
-                    logger.info(f"✅ Drip #{count+1} sent to {uid}")
+                    logger.info(f"✅ Daily drip #{count+1} sent to {uid}")
                 else:
                     logger.error(f"❌ Drip FAILED to send to {uid}")
 
@@ -726,7 +757,7 @@ def drip_scheduler():
 
         except Exception as e:
             logger.error(f"Drip scheduler error: {e}")
-        time.sleep(300)
+        time.sleep(600)  # check every 10 min
 
 
 def start_background_threads():
