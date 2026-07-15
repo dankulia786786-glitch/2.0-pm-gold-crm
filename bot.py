@@ -471,14 +471,8 @@ def handle_start(user_id, first_name, username):
 
     send_to_user(user_id,
         f"👋 <b>Welcome to Vayle Enterprise, {first_name}!</b>\n\n"
-        "🏆 Your gateway to <b>FREE VIP GOLD, BTC &amp; FOREX SIGNALS</b> — free for life.\n\n"
-        "Here's what you unlock inside:\n\n"
-        "✅ FREE VIP signals group (Gold • Bitcoin • Forex)\n\n"
-        "✅ 150% deposit bonus for new accounts\n\n"
-        "✅ 50% re-deposit bonus (lifetime)\n\n"
-        "✅ Help opening a Vantage or PU Prime account\n\n"
-        "✅ Direct 1-on-1 support whenever you're stuck\n\n"
-        "👇 <b>Let's get you set up — pick the one that fits you:</b>",
+        "Let's get you set up — takes 20 seconds.\n\n"
+        "👇 <b>Which one fits you?</b>",
         keyboard={"inline_keyboard": [
             [{"text": "✅ I already have a Vantage / PU Prime account", "callback_data": "have_account"}],
             [{"text": "🆕 I need to create an account", "callback_data": "create_account"}],
@@ -556,17 +550,17 @@ def handle_create_account(user_id, first_name, username):
         "🆕 <b>No account? No problem — let's get you set up in 30 seconds.</b>\n\n\n"
         "🔥 <b>JOIN THE BEST BROKER OF 2026</b>\n\n"
         "━━━━━━━━━━━━━━━\n\n"
-        "1️⃣ <b>Create your account here</b> (takes 30s):\n"
-        "https://vigco.co/QJrYVz\n\n"
+        "1️⃣ <b>Create your account here</b> (takes 30s):\n\n"
+        "👉 https://vigco.co/QJrYVz\n\n"
         "━━━━━━━━━━━━━━━\n\n"
-        "2️⃣ <b>Use these settings when signing up:</b>\n"
+        "2️⃣ <b>Use these settings when signing up:</b>\n\n"
         "• Referral / IB: <b>58576</b>\n"
         "• Platform: <b>MT4 or MT5</b>\n"
         "• Account: <b>Standard STP</b>\n"
         "• Currency: <b>GBP or USD</b>\n\n"
         "━━━━━━━━━━━━━━━\n\n"
-        "3️⃣ 💰 <b>Then we apply your 150% Deposit Bonus:</b>\n"
-        "Deposit <b>£500</b> → get <b>£750</b> on top → trade with <b>£1,250</b> 🔥\n\n"
+        "3️⃣ 💰 <b>Then we apply your 150% Deposit Bonus:</b>\n\n"
+        "Deposit <b>£500</b> → get <b>£750</b> on top → trade with <b>£1,250</b> 🔥\n\n\n"
         "✅ Once your account's created, tap below 👇",
         keyboard={"inline_keyboard": [
             [{"text": "✅ ACCOUNT CREATED", "callback_data": "account_created"}],
@@ -610,11 +604,11 @@ def handle_vantage(user_id, first_name, username):
         "✅ <b>Perfect — here's how to unlock your FREE lifetime VIP access.</b>\n\n"
         "Just follow these 4 quick steps 👇\n\n"
         "━━━━━━━━━━━━━━━\n\n"
-        "1️⃣ <b>Log in to your Vantage account</b>\n"
-        "https://secure.vantagemarkets.com/logout?lang=en_US\n\n"
+        "1️⃣ <b>Log in to your Vantage account</b>\n\n"
+        "👉 https://secure.vantagemarkets.com/logout?lang=en_US\n\n"
         "━━━━━━━━━━━━━━━\n\n"
-        "2️⃣ <b>Open the IB transfer form</b>\n"
-        "https://secure.vantagemarkets.com/profile/transfer-ib-affiliate\n\n"
+        "2️⃣ <b>Open the IB transfer form</b>\n\n"
+        "👉 https://secure.vantagemarkets.com/profile/transfer-ib-affiliate\n\n"
         "━━━━━━━━━━━━━━━\n\n"
         "3️⃣ <b>Enter these details exactly:</b>\n"
         "• Partnership Type: <b>IB</b>\n"
@@ -665,11 +659,11 @@ def handle_puprime(user_id, first_name, username):
         "✅ <b>Perfect — here's how to unlock your FREE lifetime VIP access.</b>\n\n"
         "Just follow these 4 quick steps 👇\n\n"
         "━━━━━━━━━━━━━━━\n\n"
-        "1️⃣ <b>Log in to your PU Prime portal</b>\n"
-        "https://myaccount.puprime.com/home\n\n"
+        "1️⃣ <b>Log in to your PU Prime portal</b>\n\n"
+        "👉 https://myaccount.puprime.com/home\n\n"
         "━━━━━━━━━━━━━━━\n\n"
-        "2️⃣ <b>Open the IB transfer form</b>\n"
-        "https://myaccount.puprime.com/profile/transfer-ib-affiliate\n\n"
+        "2️⃣ <b>Open the IB transfer form</b>\n\n"
+        "👉 https://myaccount.puprime.com/profile/transfer-ib-affiliate\n\n"
         "━━━━━━━━━━━━━━━\n\n"
         "3️⃣ <b>Enter these details exactly:</b>\n"
         "• Partnership Type: <b>IB</b>\n"
