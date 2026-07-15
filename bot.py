@@ -45,7 +45,7 @@ def requires_auth(f):
         auth = request.authorization
         if not auth or not check_auth(auth.username, auth.password):
             return Response("Login required", 401,
-                {'WWW-Authenticate': 'Basic realm="Kevin VIP CRM"'})
+                {'WWW-Authenticate': 'Basic realm="Vayle Enterprise CRM"'})
         return f(*args, **kwargs)
     return decorated
 
@@ -252,10 +252,36 @@ DRIP_MESSAGES = [
     "\U0001F4A1 <b>PEOPLE TAKING ACTION ARE THE ONES WINNING IN 2026</b>\n\n\nAccount Management is the passive path.\n\n\n\u2705 From \u00A3500, no upfront fees\n\n\u2705 80% yours\n\n\u2705 Live verified results\n\n\nMake your move \U0001F447",
 ]
 
+# ─── ENGAGEMENT QUESTIONS (every ~8h, friendly, get replies) ──────────────────
+ENGAGEMENT_QUESTIONS = [
+    "Yo 👋 did you trade today?\n\nWhat did you catch — gold, BTC, or forex?",
+    "Quick one 👇\n\nGold today — you reckon it's going up or down this week?",
+    "Be honest 😅\n\nDid you make profit or take a loss today?",
+    "How's the trading going bro? 📈\n\nUp or down this week?",
+    "You watching gold right now? 👀\n\nWhat's your bias — bullish or bearish?",
+    "Did you catch that gold move today? 🔥\n\nOr did it get away from you?",
+    "What's your account looking like this week? 💰\n\nGreen or red?",
+    "Bitcoin's been moving 🪙\n\nYou in any positions right now?",
+    "Real talk 👇\n\nWhat's the one thing holding your trading back right now?",
+    "You trading solo or following signals? 🤔\n\nHow's it working out?",
+    "Gold, Bitcoin or Forex — what's your favourite to trade? 📊\n\nTell me 👇",
+    "How many trades did you take this week? 📈\n\nAnd how'd they go?",
+    "If you could get ONE thing to level up your trading, what would it be? 💭",
+    "You up or down on the month so far? 💰\n\nNo judgement 😄",
+    "What broker are you on right now? 🤔\n\nHappy with it?",
+    "Did you take the gold trade today? 🚨\n\nHow'd it play out?",
+    "Be honest — are you trading with a plan, or winging it? 😅\n\nMost people wing it 👇",
+    "What's your biggest trading win so far? 🔥\n\nDrop it below 👇",
+]
+
+ENGAGE_BUTTON = {"inline_keyboard": [
+    [{"text": "💬 Message me", "url": "https://t.me/Vayle_Enterprise"}],
+]}
+
 
 JOIN_BUTTON = {"inline_keyboard": [
     [{"text": "✅ COMPLETE SETUP (20 sec)", "callback_data": "restart_onboarding"}],
-    [{"text": "❗️ Live Support", "url": "https://t.me/Vantageadmins"}],
+    [{"text": "❗️ Live Support", "url": "https://t.me/Vayle_Enterprise"}],
     [{"text": "📲 Join WhatsApp", "url": WHATSAPP_LINK},
      {"text": "💳 Premium Signals", "url": PREMIUM_LINK}],
 ]}
@@ -444,33 +470,35 @@ def handle_start(user_id, first_name, username):
         save_users(users_db)
 
     send_to_user(user_id,
-        f"👋 <b>Welcome, {first_name} | GOLD SIGNALS 🔔</b>\n\n"
-        "▓░░░░ <b>20% complete</b>\n\n"
-        "🚀 <b>Let's get you set up.</b>\n"
-        "⏱️ Takes less than 20 seconds to complete.\n\n"
-        "Please select the broker you're currently using so we can guide you "
-        "through the correct setup process.\n\n"
-        "👇 <b>Choose your broker below:</b>",
+        f"👋 <b>Welcome to Vayle Enterprise, {first_name}!</b>\n\n"
+        "🏆 Your gateway to <b>FREE VIP GOLD, BTC &amp; FOREX SIGNALS</b> — free for life.\n\n"
+        "Here's what you unlock inside:\n\n"
+        "✅ FREE VIP signals group (Gold • Bitcoin • Forex)\n\n"
+        "✅ 150% deposit bonus for new accounts\n\n"
+        "✅ 50% re-deposit bonus (lifetime)\n\n"
+        "✅ Help opening a Vantage or PU Prime account\n\n"
+        "✅ Direct 1-on-1 support whenever you're stuck\n\n"
+        "👇 <b>Let's get you set up — pick the one that fits you:</b>",
         keyboard={"inline_keyboard": [
-            [{"text": "🔵 Vantage", "callback_data": "broker_vantage"}],
-            [{"text": "🔴 PU Prime", "callback_data": "broker_puprime"}]
+            [{"text": "✅ I already have a Vantage / PU Prime account", "callback_data": "have_account"}],
+            [{"text": "🆕 I need to create an account", "callback_data": "create_account"}],
+            [{"text": "💰 Claim my 150% + 50% bonus", "callback_data": "claim_bonus"}],
+            [{"text": "💬 Stuck? Message me", "url": "https://t.me/Vayle_Enterprise"}],
         ]}
     )
-    onboarding_state[user_id] = {"step": "broker_choice", "first_name": first_name, "username": username}
+    onboarding_state[user_id] = {"step": "main_menu", "first_name": first_name, "username": username}
     _add_step(user_id, "Started onboarding")
 
     # Log to chat history
     store_client_message(user_id, "▶️ Client started the bot (/start)", direction="event")
-    store_client_message(user_id, "🤖 Bot: Welcome! Please choose your broker — Vantage or PU Prime.", direction="out")
+    store_client_message(user_id, "🤖 Bot: Welcome! Showed main menu.", direction="out")
 
     mid = notify_owner(
         f"🔔 <b>NEW LEAD STARTED THE BOT!</b>\n\n"
         f"👤 <b>Name:</b> {first_name}\n"
         f"📲 <b>Username:</b> @{username}\n"
-        f"🆔 <b>Telegram ID:</b> <code>{user_id}</code>\n"
-        f"📧 <b>Email:</b> —\n"
-        f"📞 <b>Phone:</b> —\n\n"
-        f"⏳ <b>Status:</b> Just started — choosing broker...\n\n"
+        f"🆔 <b>Telegram ID:</b> <code>{user_id}</code>\n\n"
+        f"⏳ <b>Status:</b> Just started — at main menu...\n\n"
         f"💬 <i>Swipe/reply to THIS message to text them directly.</i>",
     )
     if mid:
@@ -484,6 +512,90 @@ def _add_step(user_id, step_text):
             users_db[str(user_id)]["steps"] = steps
             save_users(users_db)
 
+def _broker_choice(user_id, first_name, username, flow):
+    """Show Vantage / PU Prime choice. flow = 'have' | 'bonus'."""
+    send_to_user(user_id,
+        "👇 <b>Which broker are you with?</b>\n\n"
+        "Pick one and we'll guide you through the quick setup.",
+        keyboard={"inline_keyboard": [
+            [{"text": "🔵 Vantage", "callback_data": "broker_vantage"}],
+            [{"text": "🔴 PU Prime", "callback_data": "broker_puprime"}],
+            [{"text": "💬 Stuck? Message me", "url": "https://t.me/Vayle_Enterprise"}],
+        ]}
+    )
+    onboarding_state[user_id] = {"step": "broker_choice", "flow": flow, "first_name": first_name, "username": username}
+
+def handle_have_account(user_id, first_name, username):
+    _add_step(user_id, "Has account - choosing broker")
+    store_client_message(user_id, "Client tapped: I already have an account", direction="event")
+    _broker_choice(user_id, first_name, username, "have")
+    notify_owner(f"✅ <b>Lead has an account</b>\n👤 {first_name} (@{username})\n🆔 <code>{user_id}</code>\nChoosing broker...")
+
+def handle_claim_bonus(user_id, first_name, username):
+    _add_step(user_id, "Claiming bonus")
+    store_client_message(user_id, "Client tapped: Claim bonus", direction="event")
+    send_to_user(user_id,
+        "💰 <b>CLAIM YOUR 150% + 50% BONUS</b>\n\n\n"
+        "Here's what you get:\n\n"
+        "✅ <b>150% deposit bonus</b> on new accounts\n\n"
+        "✅ <b>50% re-deposit bonus</b> — for life\n\n\n"
+        "Example: deposit <b>£500</b> → get <b>£750</b> on top → trade with <b>£1,250</b> 🔥\n\n\n"
+        "First, let's link your account 👇"
+    )
+    _broker_choice(user_id, first_name, username, "bonus")
+    notify_owner(f"💰 <b>Lead claiming bonus</b>\n👤 {first_name} (@{username})\n🆔 <code>{user_id}</code>")
+
+def handle_create_account(user_id, first_name, username):
+    _add_step(user_id, "Creating new account")
+    store_client_message(user_id, "Client tapped: Create an account", direction="event")
+    with users_lock:
+        if str(user_id) in users_db:
+            users_db[str(user_id)]["broker"] = "Vantage (new)"
+            save_users(users_db)
+    send_to_user(user_id,
+        "🆕 <b>No account? No problem — let's get you set up in 30 seconds.</b>\n\n\n"
+        "🔥 <b>JOIN THE BEST BROKER OF 2026</b>\n\n"
+        "━━━━━━━━━━━━━━━\n\n"
+        "1️⃣ <b>Create your account here</b> (takes 30s):\n"
+        "https://vigco.co/QJrYVz\n\n"
+        "━━━━━━━━━━━━━━━\n\n"
+        "2️⃣ <b>Use these settings when signing up:</b>\n"
+        "• Referral / IB: <b>58576</b>\n"
+        "• Platform: <b>MT4 or MT5</b>\n"
+        "• Account: <b>Standard STP</b>\n"
+        "• Currency: <b>GBP or USD</b>\n\n"
+        "━━━━━━━━━━━━━━━\n\n"
+        "3️⃣ 💰 <b>Then we apply your 150% Deposit Bonus:</b>\n"
+        "Deposit <b>£500</b> → get <b>£750</b> on top → trade with <b>£1,250</b> 🔥\n\n"
+        "✅ Once your account's created, tap below 👇",
+        keyboard={"inline_keyboard": [
+            [{"text": "✅ ACCOUNT CREATED", "callback_data": "account_created"}],
+            [{"text": "💬 Stuck? Message me", "url": "https://t.me/Vayle_Enterprise"}],
+        ]}
+    )
+    onboarding_state[user_id] = {"step": "awaiting_created", "broker": "vantage", "first_name": first_name, "username": username}
+    notify_owner(f"🆕 <b>Lead creating NEW account</b>\n👤 {first_name} (@{username})\n🆔 <code>{user_id}</code>")
+
+def handle_account_created(user_id, first_name, username):
+    _add_step(user_id, "New account created")
+    store_client_message(user_id, "Client tapped: Account created", direction="event")
+    _ask_for_details(user_id, first_name, username, "Vantage")
+    onboarding_state[user_id] = {"step": "awaiting_account", "broker": "vantage", "first_name": first_name, "username": username}
+    notify_owner(f"✅ <b>Lead created account - awaiting details</b>\n👤 {first_name} (@{username})\n🆔 <code>{user_id}</code>")
+
+def _ask_for_details(user_id, first_name, username, broker_label):
+    send_to_user(user_id,
+        "🎉 <b>Almost there — you're getting FREE VIP access!</b>\n\n\n"
+        "Please provide <b>ONE</b> of the following to verify your account:\n\n"
+        f"✅ Your <b>{broker_label} MT4/MT5 number</b>\n\n"
+        f"✅ Your <b>{broker_label} UID</b>\n\n"
+        f"✅ Your <b>{broker_label} account email</b>\n\n\n"
+        "👇 Just type it below and send.",
+        keyboard={"inline_keyboard": [
+            [{"text": "💬 Stuck? Message me", "url": "https://t.me/Vayle_Enterprise"}],
+        ]}
+    )
+
 def handle_vantage(user_id, first_name, username):
     with users_lock:
         if str(user_id) in users_db:
@@ -495,24 +607,32 @@ def handle_vantage(user_id, first_name, username):
     send_photo_to_user(user_id, VANTAGE_IMAGE)
     # 2) Steps
     send_to_user(user_id,
-        "▓▓░░░ <b>40% complete</b>\n\n"
-        "🚀 <b>Complete the steps below to activate your FREE Premium Group access.</b> (Takes 10s)\n\n"
-        "1️⃣ Log-in to your Vantage client portal:\n👇\n"
+        "✅ <b>Perfect — here's how to unlock your FREE lifetime VIP access.</b>\n\n"
+        "Just follow these 4 quick steps 👇\n\n"
+        "━━━━━━━━━━━━━━━\n\n"
+        "1️⃣ <b>Log in to your Vantage account</b>\n"
         "https://secure.vantagemarkets.com/logout?lang=en_US\n\n"
-        "2️⃣ After Log-in, Please click link below & Fill the Form 📋\n👇\n"
+        "━━━━━━━━━━━━━━━\n\n"
+        "2️⃣ <b>Open the IB transfer form</b>\n"
         "https://secure.vantagemarkets.com/profile/transfer-ib-affiliate\n\n"
-        "3️⃣ Enter the following details exactly as shown:\n"
-        "✅ Partnership Type: IB\n"
-        "✅ IB Code: <b>58576</b>\n"
-        "✅ Reason: PM"
+        "━━━━━━━━━━━━━━━\n\n"
+        "3️⃣ <b>Enter these details exactly:</b>\n"
+        "• Partnership Type: <b>IB</b>\n"
+        "• IB Number: <b>58576</b>\n"
+        "• Reason: <b>VIP</b>\n\n"
+        "━━━━━━━━━━━━━━━\n\n"
+        "4️⃣ <b>Close any open positions, then hit Submit.</b>\n\n"
+        "✅ When you've submitted the form, tap the button below 👇"
     )
-    # 3) Important + DONE button
+    # 3) DONE + Stuck buttons
     send_to_user(user_id,
         "🚨 <b>IMPORTANT</b>\n\n"
-        "🚫 Please close all open positions before initiating the transfer.\n"
-        "🚫 Wait for the confirmation email before placing any new trades.\n\n"
-        "👇 Once completed, click the button below.",
-        keyboard={"inline_keyboard": [[{"text": "✅ DONE", "callback_data": "done_vantage"}]]}
+        "🚫 Close all open positions before the transfer.\n"
+        "🚫 Wait for the confirmation email before placing new trades.",
+        keyboard={"inline_keyboard": [
+            [{"text": "✅ DONE, form submitted", "callback_data": "done_vantage"}],
+            [{"text": "💬 Stuck? Message me", "url": "https://t.me/Vayle_Enterprise"}],
+        ]}
     )
     onboarding_state[user_id] = {"step": "awaiting_done", "broker": "vantage", "first_name": first_name, "username": username}
 
@@ -542,24 +662,32 @@ def handle_puprime(user_id, first_name, username):
     send_photo_to_user(user_id, PUPRIME_IMAGE)
     # 2) Steps
     send_to_user(user_id,
-        "▓▓░░░ <b>40% complete</b>\n\n"
-        "🚀 <b>Complete the steps below to activate your FREE Premium Group access.</b> (Takes 10s)\n\n"
-        "1️⃣ Log in to your PU Prime Client Portal\n👇\n"
+        "✅ <b>Perfect — here's how to unlock your FREE lifetime VIP access.</b>\n\n"
+        "Just follow these 4 quick steps 👇\n\n"
+        "━━━━━━━━━━━━━━━\n\n"
+        "1️⃣ <b>Log in to your PU Prime portal</b>\n"
         "https://myaccount.puprime.com/home\n\n"
-        "2️⃣ After Log-in, Please click link below & Open the IB Transfer Form 📋\n👇\n"
+        "━━━━━━━━━━━━━━━\n\n"
+        "2️⃣ <b>Open the IB transfer form</b>\n"
         "https://myaccount.puprime.com/profile/transfer-ib-affiliate\n\n"
-        "3️⃣ Enter the following details exactly as shown:\n"
-        "✅ Partnership Type: IB\n"
-        "✅ IB Code: <b>50151</b>\n"
-        "✅ Reason: PM"
+        "━━━━━━━━━━━━━━━\n\n"
+        "3️⃣ <b>Enter these details exactly:</b>\n"
+        "• Partnership Type: <b>IB</b>\n"
+        "• IB Number: <b>50151</b>\n"
+        "• Reason: <b>VIP</b>\n\n"
+        "━━━━━━━━━━━━━━━\n\n"
+        "4️⃣ <b>Close any open positions, then hit Submit.</b>\n\n"
+        "✅ When you've submitted the form, tap the button below 👇"
     )
-    # 3) Important + DONE button
+    # 3) DONE + Stuck buttons
     send_to_user(user_id,
         "🚨 <b>IMPORTANT</b>\n\n"
-        "🚫 Please close all open positions before initiating the transfer.\n"
-        "🚫 Wait for the confirmation email before placing any new trades.\n\n"
-        "👇 Once completed, click the button below.",
-        keyboard={"inline_keyboard": [[{"text": "✅ DONE", "callback_data": "done_puprime"}]]}
+        "🚫 Close all open positions before the transfer.\n"
+        "🚫 Wait for the confirmation email before placing new trades.",
+        keyboard={"inline_keyboard": [
+            [{"text": "✅ DONE, form submitted", "callback_data": "done_puprime"}],
+            [{"text": "💬 Stuck? Message me", "url": "https://t.me/Vayle_Enterprise"}],
+        ]}
     )
     onboarding_state[user_id] = {"step": "awaiting_done", "broker": "puprime", "first_name": first_name, "username": username}
 
@@ -580,29 +708,18 @@ def handle_puprime(user_id, first_name, username):
 
 def handle_done(user_id, first_name, username, broker):
     _add_step(user_id, "Clicked DONE")
-
-    # Log to chat history
     store_client_message(user_id, "✅ Client tapped: DONE (IB transfer completed)", direction="event")
-    store_client_message(user_id, "🤖 Bot: Please enter your MT4/MT5 account number.", direction="out")
+    store_client_message(user_id, "🤖 Bot: Asked for MT4/MT5 / UID / email.", direction="out")
 
     broker_label = "Vantage" if broker == "vantage" else "PU Prime"
-    send_to_user(user_id,
-        "▓▓▓▓░ <b>80% complete</b>\n\n"
-        "Please provide <b>ONE</b> of the following to verify your account:\n\n"
-        f"✅ Your <b>{broker_label} MT4/MT5 Account Number</b>\n"
-        "  <i>— or —</i>\n"
-        f"✅ Your <b>{broker_label} account email</b>\n"
-        "  <i>— or —</i>\n"
-        f"✅ Your <b>{broker_label} UID</b>\n\n"
-        "👇 Just type it below and send."
-    )
+    _ask_for_details(user_id, first_name, username, broker_label)
     onboarding_state[user_id] = {"step": "awaiting_account", "broker": broker, "first_name": first_name, "username": username}
     mid = notify_owner(
         f"✅ <b>Lead clicked DONE</b>\n\n"
         f"👤 Name: {first_name}\n"
         f"📲 Username: @{username}\n"
         f"🆔 User ID: <code>{user_id}</code>\n\n"
-        f"⏳ Status: Waiting for MT4/MT5 account number...\n\n"
+        f"⏳ Status: Waiting for MT4/MT5 / UID / email...\n\n"
         f"<i>↩️ Reply to THIS message to send them a message</i>"
     )
     if mid:
@@ -696,14 +813,15 @@ def forward_channel_post_to_users(post):
 
 # ─── DRIP SCHEDULER ───────────────────────────────────────────────────────────
 MAX_DRIP_DAYS = 30
-# Once per day per user, fired at a RANDOM time (not clustered, not fixed).
-# We give each user a random "next drip" time between 20 and 28 hours after
-# their last one, so it lands at different times each day.
-DRIP_MIN_GAP = 20 * 3600  # 20 hours
-DRIP_MAX_GAP = 28 * 3600  # 28 hours
+# Plan B: engagement questions often (~8h), promo ads rarely (~20h).
+# Each user gets their own random next-times so nothing is clustered.
+PROMO_MIN_GAP = 18 * 3600   # ~18h
+PROMO_MAX_GAP = 24 * 3600   # ~24h
+QUESTION_MIN_GAP = 7 * 3600  # ~7h
+QUESTION_MAX_GAP = 10 * 3600 # ~10h
 
 def drip_scheduler():
-    logger.info("✅ DRIP SCHEDULER THREAD STARTED (once/day, random time)")
+    logger.info("✅ DRIP SCHEDULER STARTED (questions ~8h, promos ~20h)")
     cycle = 0
     while True:
         cycle += 1
@@ -723,37 +841,42 @@ def drip_scheduler():
                 if now - started > MAX_DRIP_DAYS * 86400:
                     continue
 
-                # each user has their own random next-drip time
+                # ── ENGAGEMENT QUESTION (every ~8h) ──
+                next_q = data.get("next_question")
+                if next_q is None:
+                    with users_lock:
+                        users_db[uid]["next_question"] = now + random.uniform(QUESTION_MIN_GAP, QUESTION_MAX_GAP)
+                        save_users(users_db)
+                elif now >= next_q:
+                    q_count = data.get("question_count", 0)
+                    q = ENGAGEMENT_QUESTIONS[q_count % len(ENGAGEMENT_QUESTIONS)]
+                    if send_to_user(uid, q, keyboard=ENGAGE_BUTTON):
+                        due_count += 1
+                        with users_lock:
+                            users_db[uid]["question_count"] = q_count + 1
+                            users_db[uid]["next_question"]  = time.time() + random.uniform(QUESTION_MIN_GAP, QUESTION_MAX_GAP)
+                            save_users(users_db)
+                        logger.info(f"💬 Question #{q_count+1} sent to {uid}")
+
+                # ── PROMO AD (every ~20h) ──
                 next_drip = data.get("next_drip")
                 if next_drip is None:
-                    # first-timer: schedule their first drip at a random time today
-                    next_drip = now + random.uniform(DRIP_MIN_GAP, DRIP_MAX_GAP)
                     with users_lock:
-                        users_db[uid]["next_drip"] = next_drip
+                        users_db[uid]["next_drip"] = now + random.uniform(PROMO_MIN_GAP, PROMO_MAX_GAP)
                         save_users(users_db)
-                    continue
+                elif now >= next_drip:
+                    count = data.get("drip_count", 0)
+                    msg = DRIP_MESSAGES[count % len(DRIP_MESSAGES)]
+                    if send_to_user(uid, msg, keyboard=JOIN_BUTTON):
+                        due_count += 1
+                        with users_lock:
+                            users_db[uid]["last_drip"]  = time.time()
+                            users_db[uid]["drip_count"] = count + 1
+                            users_db[uid]["next_drip"]  = time.time() + random.uniform(PROMO_MIN_GAP, PROMO_MAX_GAP)
+                            save_users(users_db)
+                        logger.info(f"✅ Promo #{count+1} sent to {uid}")
 
-                if now < next_drip:
-                    continue
-
-                due_count += 1
-
-                count = data.get("drip_count", 0)
-                # rotate through messages, shuffled so PM/AM mix feels random
-                msg = DRIP_MESSAGES[count % len(DRIP_MESSAGES)]
-                ok  = send_to_user(uid, msg, keyboard=JOIN_BUTTON)
-                if ok:
-                    with users_lock:
-                        users_db[uid]["last_drip"]  = time.time()
-                        users_db[uid]["drip_count"] = count + 1
-                        # schedule the NEXT one at a fresh random time
-                        users_db[uid]["next_drip"]  = time.time() + random.uniform(DRIP_MIN_GAP, DRIP_MAX_GAP)
-                        save_users(users_db)
-                    logger.info(f"✅ Daily drip #{count+1} sent to {uid}")
-                else:
-                    logger.error(f"❌ Drip FAILED to send to {uid}")
-
-            logger.info(f"[Drip cycle #{cycle}] Complete. {due_count} leads were due and processed.")
+            logger.info(f"[Drip cycle #{cycle}] Complete. {due_count} messages sent.")
 
         except Exception as e:
             logger.error(f"Drip scheduler error: {e}")
@@ -907,7 +1030,15 @@ def telegram_update():
                     }
                     save_users(users_db)
 
-            if data == "broker_vantage":
+            if data == "have_account":
+                handle_have_account(user_id, name, username)
+            elif data == "create_account":
+                handle_create_account(user_id, name, username)
+            elif data == "claim_bonus":
+                handle_claim_bonus(user_id, name, username)
+            elif data == "account_created":
+                handle_account_created(user_id, name, username)
+            elif data == "broker_vantage":
                 handle_vantage(user_id, name, username)
             elif data == "broker_puprime":
                 handle_puprime(user_id, name, username)
@@ -942,7 +1073,7 @@ def telegram_update():
                 replied_mid = str(reply_to.get("message_id", ""))
                 client_id   = reply_map.get(replied_mid)
                 if client_id:
-                    send_to_user(client_id, f"💬 <b>Message from Kevin:</b>\n\n{text}")
+                    send_to_user(client_id, f"💬 <b>Message from Vayle Enterprise:</b>\n\n{text}")
                     store_client_message(client_id, text, direction="out")
                     notify_owner("✅ Your reply was sent to the client.")
                 else:
@@ -1001,7 +1132,7 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Kevin VIP CRM</title>
+<title>Vayle Enterprise CRM</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #fff; min-height: 100vh; }
@@ -1154,7 +1285,7 @@ body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: #fff; mi
 <body>
 <div class="header">
   <div>
-    <h1>👑 Kevin VIP CRM</h1>
+    <h1>👑 Vayle Enterprise CRM</h1>
     <div class="subtitle">Gold Signals — Lead Management</div>
   </div>
   <div class="header-right">
@@ -1844,7 +1975,7 @@ def api_message():
     text    = data.get("text", "")
     if not user_id or not text:
         return jsonify({"ok": False})
-    ok = send_to_user(user_id, f"💬 <b>Message from Kevin:</b>\n\n{text}")
+    ok = send_to_user(user_id, f"💬 <b>Message from Vayle Enterprise:</b>\n\n{text}")
     if ok:
         store_client_message(user_id, text, direction="out")
     return jsonify({"ok": ok})
@@ -2013,7 +2144,7 @@ def forward_signal():
             f"🔒 <b>This signal was sent FREE to our PM group.</b>\n\n"
             f"You\'re missing every signal like this one.\n\n"
             f"👇 <b>Complete your FREE setup — takes 2 minutes!</b>\n\n"
-            f"❓ Need help? Message: @KevSupportTeam"
+            f"❓ Need help? Message: @Vayle_Enterprise"
         )
 
         with users_lock:
